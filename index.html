@@ -311,105 +311,222 @@
       {
         id: 1,
         paciente: "Fernando, 24 anos (Pronto-Socorro)",
-        demanda: "Antipsicótico Típico de Alta Potência",
-        historia: "Primeiro surto psicótico com delírios persecutórios e alucinações. Prescreva o antipsicótico típico de alta potência por via oral.",
+        demanda: "Típico Alta Potência / Agitação e Delírio",
+        historia: "Primeiro surto psicótico com delírios persecutórios e alucinações. Prescreva a dose oral inicial do antipsicótico típico de alta potência padrão.",
         gabarito: {
           droga: ["haloperidol"],
           dose: [2.5, 5, 2],
           forma: "comprimido",
           timing: "fracionado",
-          orientacoes: "Haloperidol: iniciar com 2,5 a 5 mg/dia VO. Alto risco de sintomas extrapiramidais e acatisia; menor sedação e menor efeito antimuscarínico."
+          orientacoes: "Haloperidol: iniciar com 2,5 a 5 mg/dia VO. Alto risco de sintomas extrapiramidais e acatisia; menor bloqueio anticolinérgico."
         }
       },
       {
         id: 2,
         paciente: "Paulo, 38 anos (Enfermaria Psiquiátrica)",
-        demanda: "Antipsicótico Típico Sedativo",
-        historia: "Paciente com psicose associada a extrema agitação e insônia grave. Optado por antipsicótico típico de baixa potência sedativo.",
+        demanda: "Típico Baixa Potência / Muito Sedativo",
+        historia: "Surto psicótico com agitação intensa e insônia refratária. Optado pelo típico sedativo com forte efeito antimuscarínico e risco de hipotensão.",
         gabarito: {
           droga: ["clorpromazina"],
           dose: [25, 50, 100],
           forma: "comprimido",
           timing: "noite",
-          orientacoes: "Clorpromazina: 25 a 100 mg ao deitar (baixa potência D2). Alerta para efeitos antimuscarínicos (boca seca, retenção urinária), hipotensão ortostática e QTc."
+          orientacoes: "Clorpromazina: 25 a 100 mg ao deitar. Baixa potência D2, muito sedativo; vigiar hipotensão ortostática, QTc, boca seca e retenção urinária."
         }
       },
       {
         id: 3,
+        paciente: "Mateus, 29 anos (Ambulatório)",
+        demanda: "Típico Alta Potência Alternativo",
+        historia: "Esquizofrenia em paciente intolerante à sedação da clorpromazina. Prescreva o outro típico de alta potência e baixa sedação listado.",
+        gabarito: {
+          droga: ["flufenazina"],
+          dose: [2.5, 5, 1],
+          forma: "comprimido",
+          timing: "fracionado",
+          orientacoes: "Flufenazina: 1 a 5 mg/dia fracionado. Alta potência nos receptores D2 e baixo bloqueio histamínico/muscarínico; vigiar SEP precocemente."
+        }
+      },
+      {
+        id: 4,
         paciente: "Camila, 22 anos (Ambulatório)",
-        demanda: "Antipsicótico Atípico / Manutenção",
-        historia: "Esquizofrenia estabilizada. Prescreva o antipsicótico atípico estabilizador com dose inicial de manutenção noturna.",
+        demanda: "Atípico 2ª Geração / Risco Prolactina",
+        historia: "Quadro esquizofrênico controlado. Prescreva a dose de manutenção oral do atípico que frequentemente cursa com amenorreia e galactorreia.",
         gabarito: {
           droga: ["risperidona"],
           dose: [1, 2],
           forma: "comprimido",
           timing: "noite",
-          orientacoes: "Risperidona: iniciar com 1 a 2 mg/dia ao deitar. Atentar ativamente para hiperprolactinemia (galactorreia, amenorreia e disfunção sexual)."
+          orientacoes: "Risperidona: 1 a 2 mg ao deitar. Atua em D2/5-HT2A. Maior propensão a hiperprolactinemia entre os atípicos."
         }
       },
       {
-        id: 4,
+        id: 5,
         paciente: "Bruno, 29 anos (Enfermaria)",
-        demanda: "Atípico para Mania Bipolar Aguda",
-        historia: "Transtorno bipolar em episódio maníaco agudo. Prescreva o atípico de forte ação antimaníaca com atenção à síndrome metabólica.",
+        demanda: "Atípico Antimaníaco / Risco Metabólico H1-M3",
+        historia: "Transtorno Bipolar em mania aguda exuberante. Prescreva o antipsicótico atípico potente, orientando sobre risco metabólico e ganho ponderal.",
         gabarito: {
           droga: ["olanzapina"],
           dose: [5, 10],
           forma: "comprimido",
           timing: "noite",
-          orientacoes: "Olanzapina: 5 a 10 mg ao deitar. Forte bloqueio H1 e M3 gerando grande apetite, resistência à insulina e dislipidemia."
-        }
-      },
-      {
-        id: 5,
-        paciente: "Leandro, 33 anos (Ambulatório de Humor)",
-        demanda: "Estabilizador do Humor de 1ª Linha",
-        historia: "Transtorno afetivo bipolar tipo 1 com histórico de comportamento suicida. Exames prévios (ECG, função renal, TSH, Ca) normais. Prescreva o carbonato de lítio.",
-        gabarito: {
-          droga: ["litio", "carbonato de litio"],
-          dose: [300, 600],
-          forma: "comprimido",
-          timing: "fracionado",
-          orientacoes: "Carbonato de Lítio: iniciar com 300 a 600 mg/dia. Janela terapêutica de 0,6 a 1,2 mEq/L. Dosar litemia em 5 a 7 dias após início/ajuste."
+          orientacoes: "Olanzapina: 5 a 10 mg ao deitar. Forte bloqueio H1 (apetite) e M3 (resistência à insulina/dislipidemia)."
         }
       },
       {
         id: 6,
-        paciente: "Juliana, 35 anos (Ambulatório)",
-        demanda: "Estabilizador para Depressão Bipolar",
-        historia: "Depressão bipolar em paciente sem estabilização prévia. Prescreva o antiepiléptico estabilizador com foco na prevenção de episódios depressivos.",
+        paciente: "Renata, 34 anos (Ambulatório de Humor)",
+        demanda: "Atípico Sedativo para Bipolaridade / Baixo SEP",
+        historia: "Episódio de depressão bipolar com insônia grave associada. Prescreva o atípico com perfil sedativo em dose baixa e baixíssimo risco de SEP.",
         gabarito: {
-          droga: ["lamotrigina"],
-          dose: [25],
+          droga: ["quetiapina"],
+          dose: [25, 50],
           forma: "comprimido",
-          timing: "manha",
-          orientacoes: "Lamotrigina: iniciar obrigatoriamente com 25 mg/dia por 2 semanas. A titulação lenta previne necrólise epidérmica e síndrome de Stevens-Johnson."
+          timing: "noite",
+          orientacoes: "Quetiapina: iniciar com 25 a 50 mg ao deitar (efeito hipnótico por bloqueio H1). Titular progressivamente conforme indicação antimaníaca/estabilizadora."
         }
       },
       {
         id: 7,
-        paciente: "Marcos, 42 anos (Ambulatório)",
-        demanda: "Antiepiléptico com Dosagem Sérica",
-        historia: "Epilepsia com crises focais e transtorno de humor associado. Prescreva o antiepiléptico que exige monitoramento periódico de nível sérico e hemograma.",
+        paciente: "Larissa, 27 anos (Ambulatório Geral)",
+        demanda: "Atípico 3ª Geração / Poupador Metabólico",
+        historia: "Esquizofrenia em paciente com pré-diabetes e medo de ganho de peso. Prescreva o agonista parcial D2 com perfil neutro em prolactina e peso.",
         gabarito: {
-          droga: ["carbamazepina"],
-          dose: [200],
+          droga: ["aripiprazol"],
+          dose: [10, 15, 5],
           forma: "comprimido",
-          timing: "fracionado",
-          orientacoes: "Carbamazepina: 200 mg fracionado (12/12h). Exige acompanhamento de concentração sérica, hemograma e eletrólitos (risco de hiponatremia)."
+          timing: "manha",
+          orientacoes: "Aripiprazol: 10 a 15 mg pela manhã (ou 5 mg inicial). Agonista parcial de D2; excelente perfil metabólico; monitorar acatisia."
         }
       },
       {
         id: 8,
-        paciente: "Carlos, 40 anos (Ambulatório de Refratariedade)",
-        demanda: "Antipsicótico para Esquizofrenia Refratária",
-        historia: "Falha terapêutica documentada a Haloperidol e Olanzapina. Prescreva a molécula padrão-ouro para refratariedade.",
+        paciente: "Carlos, 40 anos (Refratariedade)",
+        demanda: "Atípico Padrão-Ouro / Risco Agranulocitose",
+        historia: "Esquizofrenia resistente com falha a múltiplos tratamentos e agressividade. Prescreva a molécula que exige controle de hemograma obrigatório.",
         gabarito: {
           droga: ["clozapina"],
           dose: [12.5, 25],
           forma: "comprimido",
           timing: "noite",
-          orientacoes: "Clozapina: 12,5 a 25 mg ao deitar inicialmente. Alto impacto metabólico e risco de agranulocitose (hemograma semanal no início)."
+          orientacoes: "Clozapina: 12,5 a 25 mg ao deitar. Reservado para refratariedade; risco de agranulocitose e constipação grave/íleo paralítico."
+        }
+      },
+      {
+        id: 9,
+        paciente: "Leandro, 33 anos (Ambulatório de Bipolar)",
+        demanda: "Estabilizador Padrão-Ouro / Profilaxia Suicídio",
+        historia: "Transtorno afetivo bipolar com histórico de tentativa de autoextermínio. Exames basais (ECG, TSH, Cr, Ca) normais. Prescreva o carbonato de lítio.",
+        gabarito: {
+          droga: ["litio", "carbonato de litio"],
+          dose: [300, 600],
+          forma: "comprimido",
+          timing: "fracionado",
+          orientacoes: "Carbonato de Lítio: 300 a 600 mg/dia fracionado. Monitorar litemia em 5 a 7 dias (alvo 0,6 a 1,2 mEq/L)."
+        }
+      },
+      {
+        id: 10,
+        paciente: "Gustavo, 31 anos (Enfermaria)",
+        demanda: "Estabilizador / Mania e Crises com Monitorização",
+        historia: "Transtorno bipolar em estado misto. Prescreva o anticonvulsivante/estabilizador que exige dosagem sérica e tem risco teratogênico (tubo neural).",
+        gabarito: {
+          droga: ["valproato", "acido valproico", "divalproato"],
+          dose: [500, 250],
+          forma: "comprimido",
+          timing: "fracionado",
+          orientacoes: "Ácido Valproico/Divalproato: 250 a 500 mg 12/12h. Exige dosagem sérica (50-100 mcg/mL), hemograma e transaminases; contraindicado na gestação."
+        }
+      },
+      {
+        id: 11,
+        paciente: "Juliana, 35 anos (Ambulatório)",
+        demanda: "Estabilizador para Depressão Bipolar / Titulação Lenta",
+        historia: "Paciente com depressão bipolar. Prescreva o antiepiléptico estabilizador com esquema obrigatório de início lento para prevenir Stevens-Johnson.",
+        gabarito: {
+          droga: ["lamotrigina"],
+          dose: [25],
+          forma: "comprimido",
+          timing: "manha",
+          orientacoes: "Lamotrigina: 25 mg/dia nas 2 primeiras semanas. Titulação lenta mandatória para reduzir risco de farmacodermias graves."
+        }
+      },
+      {
+        id: 12,
+        paciente: "Marcos, 42 anos (Ambulatório de Epilepsia)",
+        demanda: "Antiepiléptico Crises Focais / Autoindutor",
+        historia: "Crises epilépticas focais motoras. Prescreva o antiepiléptico clássico de 1ª linha que induz o próprio metabolismo e exige dosagem sérica periódica.",
+        gabarito: {
+          droga: ["carbamazepina"],
+          dose: [200],
+          forma: "comprimido",
+          timing: "fracionado",
+          orientacoes: "Carbamazepina: 200 mg 12/12h inicial. Monitorar nível sérico (4-12 mcg/mL), hemograma (leucopenia) e sódio (risco de SIADH/hiponatremia)."
+        }
+      },
+      {
+        id: 13,
+        paciente: "Otávio, 28 anos (Neurologia)",
+        demanda: "Antiepiléptico Crises Focais / Pró-droga Derivada",
+        historia: "Crises focais com queixa de tontura e interação medicamentosa com carbamazepina. Prescreva o congênere com menor indução enzimática.",
+        gabarito: {
+          droga: ["oxcarbazepina"],
+          dose: [300],
+          forma: "comprimido",
+          timing: "fracionado",
+          orientacoes: "Oxcarbazepina: 300 mg 12/12h inicial. Menor indução enzimática que a carbamazepina; vigiar níveis séricos de sódio."
+        }
+      },
+      {
+        id: 14,
+        paciente: "Geraldo, 52 anos (Ambulatório)",
+        demanda: "Antiepiléptico Crises Focais / Cinética de Saturação",
+        historia: "Crises focais repetidas. Prescreva o antiepiléptico que exige controle sérico estrito devido à sua cinética não linear (risco de ataxia e hiperplasia gengival).",
+        gabarito: {
+          droga: ["fenitoina"],
+          dose: [100],
+          forma: "comprimido",
+          timing: "fracionado",
+          orientacoes: "Fenitoína: 100 mg 8/8h ou fracionado (dose inicial ~300 mg/dia). Cinética de Michaelis-Menten; monitorar nível sérico (10-20 mcg/mL)."
+        }
+      },
+      {
+        id: 15,
+        paciente: "Benedito, 60 anos (Ambulatório do SUS)",
+        demanda: "Barbitúrico / Focais e Generalizadas",
+        historia: "Crises tônico-clônicas generalizadas em acompanhamento básico. Prescreva o antiepiléptico barbitúrico sedativo que exige dosagem de nível sérico.",
+        gabarito: {
+          droga: ["fenobarbital"],
+          dose: [100],
+          forma: "comprimido",
+          timing: "noite",
+          orientacoes: "Fenobarbital: 100 mg ao deitar (dose única noturna devido à sedação). Potente indutor enzimático hepático; monitorar nível sérico (15-40 mcg/mL)."
+        }
+      },
+      {
+        id: 16,
+        paciente: "Lívia, 26 anos (Neurologia)",
+        demanda: "Antiepiléptico Amplo Espectro / Perda de Peso",
+        historia: "Crises generalizadas e enxaqueca crônica em paciente com obesidade. Prescreva o fármaco com ação em anidrase carbônica e redução de apetite.",
+        gabarito: {
+          droga: ["topiramato"],
+          dose: [25, 50],
+          forma: "comprimido",
+          timing: "fracionado",
+          orientacoes: "Topiramato: iniciar 25 a 50 mg/dia (dividido em 12/12h). Inibe anidrase carbônica; causa perda de peso, lentificação cognitiva e risco de nefrolitíase."
+        }
+      },
+      {
+        id: 17,
+        paciente: "Felipe, 30 anos (Neurologia)",
+        demanda: "Antiepiléptico Amplo / Mínima Interação CYP",
+        historia: "Crises generalizadas e focais em paciente polimedicado. Prescreva o antiepiléptico de ação na vesícula sináptica (SV2A) com mínima interação enzimática.",
+        gabarito: {
+          droga: ["levetiracetam"],
+          dose: [250, 500],
+          forma: "comprimido",
+          timing: "fracionado",
+          orientacoes: "Levetiracetam: 250 a 500 mg 12/12h inicial. Ligação à proteína SV2A; não metabolizado pelo CYP450; atenção a alterações de humor e irritabilidade."
         }
       }
     ];
