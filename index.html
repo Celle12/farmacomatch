@@ -252,7 +252,12 @@
       { id: "tranilcipromina", nome: "Tranilcipromina", classe: "IMAO", destaque: "Crise hipertensiva com tiramina. 1º em Sd. Serotoninérgica", perfil: "Inibição irreversível da MAO" },
       { id: "diazepam", nome: "Diazepam", classe: "Benzodiazepínico", destaque: "Meia-vida longa (>24-48h). Menor abstinência abrupta", perfil: "Receita azul B1" },
       { id: "clonazepam", nome: "Clonazepam", classe: "Benzodiazepínico", destaque: "Início rápido e meia-vida longa (30-40h)", perfil: "Potente ansiolítico" },
-      { id: "alprazolam", nome: "Alprazolam", classe: "Benzodiazepínico", destaque: "Meia-vida intermediária. Alto risco dependência", perfil: "Abstinência abrupta severa" }
+      { id: "alprazolam", nome: "Alprazolam", classe: "Benzodiazepínico", destaque: "Meia-vida intermediária. Alto risco dependência", perfil: "Abstinência abrupta severa" },
+      { id: "nortriptilina", nome: "Nortriptilina", classe: "Tricíclico (ADT)", destaque: "25mg à noite. Menor hipotensão e anticolinérgico", perfil: "Amina secundária da amitriptilina; seguro no idoso" },
+      { id: "imipramina", nome: "Imipramina", classe: "Tricíclico (ADT)", destaque: "25mg à noite. Clássico em enurese noturna", perfil: "Primeiro tricíclico desenvolvido; potente bloqueio 5-HT/NE" },
+      { id: "fenelzina", nome: "Fenelzina", classe: "IMAO", destaque: "15mg pela manhã. Hidrazina clássica em depressão atípica", perfil: "Inibidor irreversível MAO-A/B; alto risco de tiramina" },
+      { id: "isocarboxazida", nome: "Isocarboxazida", classe: "IMAO", destaque: "10-20mg pela manhã. Derivado hidrazínico", perfil: "Inibição não seletiva irreversível da MAO" },
+      { id: "selegilina", nome: "Selegilina", classe: "IMAO", destaque: "5mg pela manhã (máx 10mg p/ manter seletividade)", perfil: "Inibidor seletivo da MAO-B em dose baixa; útil em Parkinson" }
     ];
 
     const rxCasos_Antidepressivos = [
@@ -271,7 +276,85 @@
       { id:13, paciente:"Silvia, 58 anos (Clínica)", demanda:"MODULADOR Hipnótico", historia:"Insônia resistente associada a tristeza leve. Prescreva a molécula usada em 50mg ao deitar.", gabarito:{ droga:["trazodona"], dose:[50], forma:"comprimido", timing:"noite", orientacoes:"Trazodona: 50mg À NOITE. Dose hipnótica que evita dependência." }},
       { id:14, paciente:"Danilo, 49 anos (Ambulatório)", demanda:"MODULADOR Cognição", historia:"Depressão com lentificação do pensamento e queixas de memória. Prescreva o fármaco multimodal.", gabarito:{ droga:["vortioxetina"], dose:[10,5], forma:"comprimido", timing:"manha", orientacoes:"Vortioxetina: 10mg pela manhã. Ação multimodal auxilia queixas cognitivas." }},
       { id:15, paciente:"Helena, 43 anos (Cefaleia)", demanda:"TRICÍCLICO Profilaxia Enxaqueca", historia:"Enxaqueca crônica e depressão. ECG com QTc de 410ms normal. Prescreva o tricíclico padrão.", gabarito:{ droga:["amitriptilina"], dose:[25,10], forma:"comprimido", timing:"noite", orientacoes:"Amitriptilina: 25mg À NOITE ao deitar. Contraindicado em QTc >500ms." }},
-      { id:16, paciente:"Rogério, 30 anos (TOC Grave)", demanda:"TRICÍCLICO TOC Refratário", historia:"TOC incapacitante refratário a múltiplos ISRS. Prescreva o tricíclico mais potente para TOC.", gabarito:{ droga:["clomipramina"], dose:[25], forma:"comprimido", timing:"noite", orientacoes:"Clomipramina: 25mg À NOITE (titulando até 150-250mg). Padrão-ouro em TOC refratário." }}
+      { id:16, paciente:"Rogério, 30 anos (TOC Grave)", demanda:"TRICÍCLICO TOC Refratário", historia:"TOC incapacitante refratário a múltiplos ISRS. Prescreva o tricíclico mais potente para TOC.", gabarito:{ droga:["clomipramina"], dose:[25], forma:"comprimido", timing:"noite", orientacoes:"Clomipramina: 25mg À NOITE (titulando até 150-250mg). Padrão-ouro em TOC refratário." }},
+      {
+        id: 17,
+        paciente: "Dona Neusa, 68 anos (Geriatria)",
+        demanda: "TRICÍCLICO Menos Anticolinérgico",
+        historia: "Depressão maior com dor neuropática. Necessita de antidepressivo tricíclico, porém com menor efeito antimuscarínico e menor hipotensão que a amitriptilina.",
+        gabarito: {
+          droga: ["nortriptilina"],
+          dose: [25, 10],
+          forma: "capsula",
+          timing: "noite",
+          orientacoes: "Nortriptilina: iniciar 25 mg (ou 10 mg em idosos frágeis) À NOITE. É a amina secundária da amitriptilina; menor sedação e menor bloqueio anticolinérgico."
+        }
+      },
+      {
+        id: 18,
+        paciente: "Gabriel, 10 anos / Mãe acompanhante (Pediatria)",
+        demanda: "TRICÍCLICO Enurese / Depressão Histórica",
+        historia: "Quadro de enurese noturna refratária com falha comportamental e comorbidade ansiosa. Prescreva o primeiro tricíclico desenvolvido na história da psicofarmacologia.",
+        gabarito: {
+          droga: ["imipramina"],
+          dose: [25, 10],
+          forma: "comprimido",
+          timing: "noite",
+          orientacoes: "Imipramina: 25 mg (ou 10 mg) À NOITE ao deitar. O protótipo dos tricíclicos; potente ação noradrenérgica/serotoninérgica com perfil sedativo e anticolinérgico."
+        }
+      },
+      {
+        id: 19,
+        paciente: "Valter, 53 anos (Ambulatório de Refratariedade)",
+        demanda: "IMAO Clássico / Risco de Tiramina",
+        historia: "Depressão unipolar refratária a 4 classes farmacológicas. Prescreva o IMAO não hidrazínico disponível no Brasil, que exige dieta estrita sem tiramina.",
+        gabarito: {
+          droga: ["tranilcipromina"],
+          dose: [10],
+          forma: "comprimido",
+          timing: "manha",
+          orientacoes: "Tranilcipromina: iniciar 10 mg PELA MANHÃ (ação estimulante; máx 40-60 mg fracionado até o almoço). Exige restrição rigorosa de alimentos ricos em tiramina (queijos maturados, vinhos) para evitar crise hipertensiva."
+        }
+      },
+      {
+        id: 20,
+        paciente: "Cláudia, 46 anos (Psiquiatria)",
+        demanda: "IMAO Hidrazínico / Depressão Atípica",
+        historia: "Depressão crônica com sintomas atípicos (hiperfagia, hipersonia, paralisia de chumbo) refratária. Prescreva o IMAO irreversível clássico do grupo das hidrazinas.",
+        gabarito: {
+          droga: ["fenelzina"],
+          dose: [15],
+          forma: "comprimido",
+          timing: "manha",
+          orientacoes: "Fenelzina: iniciar 15 mg PELA MANHÃ (titular 15 mg 3x/dia). Inibidor irreversível da MAO-A e MAO-B; alto risco de hepatotoxicidade e crise hipertensiva por tiramina."
+        }
+      },
+      {
+        id: 21,
+        paciente: "Alberto, 50 anos (Psiquiatria Internacional)",
+        demanda: "IMAO Hidrazínico Alternativo",
+        historia: "Depressão resistente com indicação de IMAO irreversível e não seletivo da subclasse das hidrazinas com histórico de boa resposta em familiares.",
+        gabarito: {
+          droga: ["isocarboxazida"],
+          dose: [10, 20],
+          forma: "comprimido",
+          timing: "manha",
+          orientacoes: "Isocarboxazida: iniciar 10 a 20 mg/dia PELA MANHÃ (titular até 60 mg). Inibe irreversivelmente MAO-A e MAO-B; requer monitorização rigorosa de PA e dieta isenta de tiramina."
+        }
+      },
+      {
+        id: 22,
+        paciente: "Otávio, 62 anos (Neuropsiquiatria)",
+        demanda: "IMAO Seletivo MAO-B / Parkinson e Humor",
+        historia: "Doença de Parkinson em fase inicial com sintomas depressivos associados. Prescreva o IMAO que em baixas doses inibe seletivamente a MAO-B sem exigir restrição de tiramina.",
+        gabarito: {
+          droga: ["selegilina"],
+          dose: [5],
+          forma: "comprimido",
+          timing: "manha",
+          orientacoes: "Selegilina: 5 mg PELA MANHÃ no desjejum (titular até 10 mg/dia). Em baixas doses (≤10 mg/dia oral) preserva a seletividade pela MAO-B e dispensa restrição rígida de tiramina."
+        }
+      }
     ];
 
     const casosClinicos_Antidepressivos = [
