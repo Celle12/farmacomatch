@@ -284,31 +284,217 @@
     /* BANCO DE DADOS - MÓDULO 2: ANTIPSICÓTICOS & ESTABILIZAD. */
     /* ======================================================== */
     const db_Antipsicoticos = [
-      { id: "haloperidol", nome: "Haloperidol", classe: "Típico (1ª Geração)", destaque: "Alta potência D2; alto risco de SEP e acatisia", perfil: "Padrão para agitação psicomotora e delírios" },
-      { id: "clorpromazina", nome: "Clorpromazina", classe: "Típico (1ª Geração)", destaque: "Baixa potência D2; muito sedativo e hipotensor", perfil: "Alta impregnação anticolinérgica" },
-      { id: "risperidona", nome: "Risperidona", classe: "Atípico (2ª Geração)", destaque: "Aumenta muito a prolactina (galactorreia/amenorreia)", perfil: "Antagonista D2 e 5-HT2A" },
-      { id: "olanzapina", nome: "Olanzapina", classe: "Atípico (2ª Geração)", destaque: "Maior risco de ganho de peso e síndrome metabólica", perfil: "Potente em agitação e mania aguda" },
-      { id: "quetiapina", nome: "Quetiapina", classe: "Atípico (2ª Geração)", destaque: "Sedativo em baixas doses (bloqueio H1); menor SEP", perfil: "Útil em depressão bipolar e insônia" },
-      { id: "aripiprazol", nome: "Aripiprazol", classe: "Atípico (3ª Geração)", destaque: "Agonista parcial D2; neutro no peso/prolactina", perfil: "Excelente perfil metabólico; vigiar acatisia" },
-      { id: "clozapina", nome: "Clozapina", classe: "Atípico (Resistência)", destaque: "Exige hemograma periódico pelo risco de agranulocitose", perfil: "Padrão-ouro para esquizofrenia refratária" },
-      { id: "litio", nome: "Carbonato de Lítio", classe: "Estabilizador do Humor", destaque: "Faixa 0,6-1,0 mEq/L; perigo com AINEs e desidratação", perfil: "Padrão-ouro em bipolaridade e prevenção suicídio" },
-      { id: "valproato", nome: "Ácido Valproico", classe: "Estabilizador / Antiepiléptico", destaque: "Teratogênico (tubo neural); monitorar plaquetas/fígado", perfil: "Excelente para mania aguda e estados mistos" },
-      { id: "lamotrigina", nome: "Lamotrigina", classe: "Estabilizador / Antiepiléptico", destaque: "Titulação lenta para evitar Stevens-Johnson", perfil: "Droga de escolha para fase depressiva bipolar" }
+      // Antipsicóticos Típicos (1ª Geração)
+      { id: "haloperidol", nome: "Haloperidol", classe: "Típico (1ª Geração)", destaque: "Alta potência D2; baixo H1/M1; alto risco de SEP e acatisia", perfil: "Padrão em agitação/delírios; risco de discinesia tardia e SNM" },
+      { id: "clorpromazina", nome: "Clorpromazina", classe: "Típico (1ª Geração)", destaque: "Baixa potência D2; muito sedativo, hipotensor e alarga QTc", perfil: "Marcante bloqueio muscarínico (boca seca, retenção urinária)" },
+      { id: "flufenazina", nome: "Flufenazina", classe: "Típico (1ª Geração)", destaque: "Alta potência D2; menor sedação e alto risco extrapiramidal", perfil: "Apresentação oral e decanoato injetável de depósito" },
+
+      // Antipsicóticos Atípicos (2ª / 3ª Geração)
+      { id: "olanzapina", nome: "Olanzapina", classe: "Atípico (2ª Geração)", destaque: "Forte afinidade H1 e M3; alto ganho de peso e Sd. Metabólica", perfil: "Excelente em mania e agitação; resistência insulínica e dislipidemia" },
+      { id: "clozapina", nome: "Clozapina", classe: "Atípico (2ª Geração)", destaque: "Campeã em risco metabólico e agranulocitose; exige hemograma", perfil: "Padrão-ouro em esquizofrenia refratária; menor indução de SEP" },
+      { id: "risperidona", nome: "Risperidona", classe: "Atípico (2ª Geração)", destaque: "Hiperprolactinemia marcante; em altas doses mimetiza típico", perfil: "Antagonista D2/5-HT2A; estabilizador na mania aguda" },
+      { id: "quetiapina", nome: "Quetiapina", classe: "Atípico (2ª Geração)", destaque: "Sedativo em dose baixa (H1); baixíssimo risco extrapiramidal", perfil: "Aprovado em depressão bipolar, mania e insônia" },
+      { id: "aripiprazol", nome: "Aripiprazol", classe: "Atípico (3ª Geração)", destaque: "Agonista parcial D2; neutro no peso/prolactina; vigiar acatisia", perfil: "Estabilizador e antipsicótico com perfil metabólico favorável" },
+
+      // Estabilizadores do Humor & Antiepilépticos
+      { id: "litio", nome: "Carbonato de Lítio", classe: "Estabilizador do Humor", destaque: "Janela terapêutica 0,6-1,2 mEq/L; redução de suicídio", perfil: "Exige ECG, TSH, Urina 1, Cr/Ureia, Ca e Beta-hCG basais" },
+      { id: "valproato", nome: "Ácido Valproico / Divalproato", classe: "Estabilizador / Antiepiléptico", destaque: "Teratogênico (tubo neural); dosar nível sérico e função hepática", perfil: "Crises focais e generalizadas; mania aguda e estados mistos" },
+      { id: "carbamazepina", nome: "Carbamazepina", classe: "Estabilizador / Antiepiléptico", destaque: "Crises focais e mania; monitorar nível sérico e hemograma", perfil: "Autoindutor enzimático importante (CYP3A4)" },
+      { id: "lamotrigina", nome: "Lamotrigina", classe: "Estabilizador / Antiepiléptico", destaque: "Foco na depressão bipolar; titulação lenta obrigatória", perfil: "Risco grave de farmacodermia (Síndrome de Stevens-Johnson)" },
+      { id: "topiramato", nome: "Topiramato", classe: "Antiepiléptico", destaque: "Crises focais e generalizadas; perda de peso e lentificação", perfil: "Inibe anidrase carbônica; risco de nefrolitíase" },
+      { id: "fenobarbital", nome: "Fenobarbital", classe: "Antiepiléptico", destaque: "Crises focais e generalizadas; exige monitoramento sérico", perfil: "Barbitúrico sedativo indutor enzimático; receita azul/controle" },
+      { id: "fenitoina", nome: "Fenitoína", classe: "Antiepiléptico", destaque: "Crises focais; exige controle sérico (cinética não linear)", perfil: "Risco de hiperplasia gengival, ataxia e nistagmo" },
+      { id: "levetiracetam", nome: "Levetiracetam", classe: "Antiepiléptico", destaque: "Ação ampla (focais e generalizadas); pouca interação CYP", perfil: "Ligante SV2A; atenção a alterações de humor e irritabilidade" }
     ];
 
     const rxCasos_Antipsicoticos = [
-      { id:1, paciente:"Fernando, 24 anos (Pronto-Socorro)", demanda:"Antipsicótico Típico de Alta Potência", historia:"Primeiro surto psicótico com delírios persecutórios e alucinações auditivas. Prescreva a dose oral inicial do antipsicótico típico clássico de 1ª linha.", gabarito:{ droga:["haloperidol"], dose:[5,2.5,2], forma:"comprimido", timing:"fracionado", orientacoes:"Haloperidol: iniciar com 2,5 a 5 mg/dia (VO). Vigiar sintomas extrapiramidais e acatisia." }},
-      { id:2, paciente:"Camila, 22 anos (Ambulatório)", demanda:"Antipsicótico Atípico & Prolactina", historia:"Quadro esquizofrênico compensado. Indicada Risperidona oral para manutenção. Prescreva a dose inicial.", gabarito:{ droga:["risperidona"], dose:[2,1], forma:"comprimido", timing:"noite", orientacoes:"Risperidona: dose inicial 1 a 2 mg/dia ao deitar (titular até 4-6 mg). Cuidado com hiperprolactinemia." }},
-      { id:3, paciente:"Bruno, 29 anos (Enfermaria)", demanda:"Antipsicótico em Mania Aguda", historia:"Transtorno Bipolar em mania grave e agitação. Indicado o atípico potente no controle agudo, com atenção ao ganho ponderal.", gabarito:{ droga:["olanzapina"], dose:[10,5], forma:"comprimido", timing:"noite", orientacoes:"Olanzapina: 5 a 10 mg/dia ao deitar (máx 20 mg). Monitorar glicemia, peso e perfil lipídico." }},
-      { id:4, paciente:"Leandro, 33 anos (Ambulatório de Bipolar)", demanda:"Estabilizador Padrão-Ouro", historia:"Transtorno Bipolar tipo 1 com histórico de ideação suicida prévia. Prescreva o carbonato de lítio em dose inicial de adaptação.", gabarito:{ droga:["litio","carbonato de litio"], dose:[300,600], forma:"comprimido", timing:"fracionado", orientacoes:"Carbonato de Lítio: iniciar com 300 a 600 mg/dia. Coletar litemia em 5 a 7 dias no vale (meta 0,6-1,0 mEq/L)." }},
-      { id:5, paciente:"Juliana, 35 anos (Ambulatório)", demanda:"Estabilizador para Depressão Bipolar", historia:"Episódio depressivo em paciente com Transtorno Bipolar. Prescreva o anticonvulsivante que exige titulação semanal lenta para evitar Stevens-Johnson.", gabarito:{ droga:["lamotrigina"], dose:[25], forma:"comprimido", timing:"manha", orientacoes:"Lamotrigina: 25 mg/dia nas semanas 1 e 2. Dobrar a cada 2 semanas para evitar erupções cutâneas graves." }},
-      { id:6, paciente:"Carlos, 40 anos (Ambulatório de Refratariedade)", demanda:"Antipsicótico de Última Linha", historia:"Esquizofrenia refratária a haloperidol e olanzapina com agressividade persistente. Prescreva a molécula padrão-ouro que exige hemograma obrigatório.", gabarito:{ droga:["clozapina"], dose:[25,12.5], forma:"comprimido", timing:"noite", orientacoes:"Clozapina: iniciar com 12,5 a 25 mg ao deitar (titulação lenta). Risco de agranulocitose." }}
+      {
+        id: 1,
+        paciente: "Fernando, 24 anos (Pronto-Socorro)",
+        demanda: "Antipsicótico Típico de Alta Potência",
+        historia: "Primeiro surto psicótico com delírios persecutórios e alucinações. Prescreva o antipsicótico típico de alta potência por via oral.",
+        gabarito: {
+          droga: ["haloperidol"],
+          dose: [2.5, 5, 2],
+          forma: "comprimido",
+          timing: "fracionado",
+          orientacoes: "Haloperidol: iniciar com 2,5 a 5 mg/dia VO. Alto risco de sintomas extrapiramidais e acatisia; menor sedação e menor efeito antimuscarínico."
+        }
+      },
+      {
+        id: 2,
+        paciente: "Paulo, 38 anos (Enfermaria Psiquiátrica)",
+        demanda: "Antipsicótico Típico Sedativo",
+        historia: "Paciente com psicose associada a extrema agitação e insônia grave. Optado por antipsicótico típico de baixa potência sedativo.",
+        gabarito: {
+          droga: ["clorpromazina"],
+          dose: [25, 50, 100],
+          forma: "comprimido",
+          timing: "noite",
+          orientacoes: "Clorpromazina: 25 a 100 mg ao deitar (baixa potência D2). Alerta para efeitos antimuscarínicos (boca seca, retenção urinária), hipotensão ortostática e QTc."
+        }
+      },
+      {
+        id: 3,
+        paciente: "Camila, 22 anos (Ambulatório)",
+        demanda: "Antipsicótico Atípico / Manutenção",
+        historia: "Esquizofrenia estabilizada. Prescreva o antipsicótico atípico estabilizador com dose inicial de manutenção noturna.",
+        gabarito: {
+          droga: ["risperidona"],
+          dose: [1, 2],
+          forma: "comprimido",
+          timing: "noite",
+          orientacoes: "Risperidona: iniciar com 1 a 2 mg/dia ao deitar. Atentar ativamente para hiperprolactinemia (galactorreia, amenorreia e disfunção sexual)."
+        }
+      },
+      {
+        id: 4,
+        paciente: "Bruno, 29 anos (Enfermaria)",
+        demanda: "Atípico para Mania Bipolar Aguda",
+        historia: "Transtorno bipolar em episódio maníaco agudo. Prescreva o atípico de forte ação antimaníaca com atenção à síndrome metabólica.",
+        gabarito: {
+          droga: ["olanzapina"],
+          dose: [5, 10],
+          forma: "comprimido",
+          timing: "noite",
+          orientacoes: "Olanzapina: 5 a 10 mg ao deitar. Forte bloqueio H1 e M3 gerando grande apetite, resistência à insulina e dislipidemia."
+        }
+      },
+      {
+        id: 5,
+        paciente: "Leandro, 33 anos (Ambulatório de Humor)",
+        demanda: "Estabilizador do Humor de 1ª Linha",
+        historia: "Transtorno afetivo bipolar tipo 1 com histórico de comportamento suicida. Exames prévios (ECG, função renal, TSH, Ca) normais. Prescreva o carbonato de lítio.",
+        gabarito: {
+          droga: ["litio", "carbonato de litio"],
+          dose: [300, 600],
+          forma: "comprimido",
+          timing: "fracionado",
+          orientacoes: "Carbonato de Lítio: iniciar com 300 a 600 mg/dia. Janela terapêutica de 0,6 a 1,2 mEq/L. Dosar litemia em 5 a 7 dias após início/ajuste."
+        }
+      },
+      {
+        id: 6,
+        paciente: "Juliana, 35 anos (Ambulatório)",
+        demanda: "Estabilizador para Depressão Bipolar",
+        historia: "Depressão bipolar em paciente sem estabilização prévia. Prescreva o antiepiléptico estabilizador com foco na prevenção de episódios depressivos.",
+        gabarito: {
+          droga: ["lamotrigina"],
+          dose: [25],
+          forma: "comprimido",
+          timing: "manha",
+          orientacoes: "Lamotrigina: iniciar obrigatoriamente com 25 mg/dia por 2 semanas. A titulação lenta previne necrólise epidérmica e síndrome de Stevens-Johnson."
+        }
+      },
+      {
+        id: 7,
+        paciente: "Marcos, 42 anos (Ambulatório)",
+        demanda: "Antiepiléptico com Dosagem Sérica",
+        historia: "Epilepsia com crises focais e transtorno de humor associado. Prescreva o antiepiléptico que exige monitoramento periódico de nível sérico e hemograma.",
+        gabarito: {
+          droga: ["carbamazepina"],
+          dose: [200],
+          forma: "comprimido",
+          timing: "fracionado",
+          orientacoes: "Carbamazepina: 200 mg fracionado (12/12h). Exige acompanhamento de concentração sérica, hemograma e eletrólitos (risco de hiponatremia)."
+        }
+      },
+      {
+        id: 8,
+        paciente: "Carlos, 40 anos (Ambulatório de Refratariedade)",
+        demanda: "Antipsicótico para Esquizofrenia Refratária",
+        historia: "Falha terapêutica documentada a Haloperidol e Olanzapina. Prescreva a molécula padrão-ouro para refratariedade.",
+        gabarito: {
+          droga: ["clozapina"],
+          dose: [12.5, 25],
+          forma: "comprimido",
+          timing: "noite",
+          orientacoes: "Clozapina: 12,5 a 25 mg ao deitar inicialmente. Alto impacto metabólico e risco de agranulocitose (hemograma semanal no início)."
+        }
+      }
     ];
 
     const casosClinicos_Antipsicoticos = [
-      { titulo:"Renan, 25 anos - Impregnação Extrapiramidal", enunciado:"Após 2 dias de Haloperidol 10mg/dia, o paciente desenvolve torcicolo espástico súbito, desvio ocular para cima (crise oculógira) e trismo. Qual a conduta?", opcoes:[{texto:"Distonia Aguda (Tratamento: Biperideno 5mg IM/IV ou Prometazina)", correto:true, fb:"Correto! A distonia aguda surge nas primeiras 48h de antipsicóticos típicos de alta potência e responde rapidamente a anticolinérgicos."},{texto:"Aumentar a dose do Haloperidol para sedar", correto:false, fb:"Iatrogenia grave! Pioraria dramaticamente o bloqueio dopaminérgico."}]},
-      { titulo:"Sabrina, 31 anos - Avaliação Laboratorial do Lítio", enunciado:"Paciente em uso de Lítio há 3 anos chega com queixa de sonolência, ganho de peso, pele seca e constipação. Qual exame deve ser solicitado imediatamente?", opcoes:[{texto:"TSH e T4 livre (Hipotireoidismo induzido por lítio)", correto:true, fb:"Correto! O lítio inibe a síntese e liberação dos hormônios tireoidianos, sendo causa frequente de hipotireoidismo."},{texto:"Apenas colonoscopia", correto:false, fb:"Incorreto. Os sintomas apontam para descompensação tireoidiana por toxicidade crônica do lítio."}]},
-      { titulo:"Mariana, 26 anos - Teratogenicidade", enunciado:"Mulher jovem em idade fértil com Transtorno Bipolar planejando gestação para os próximos meses. Qual estabilizador deve ser formalmente EVITADO pelo alto risco de espinha bífida e defeitos do tubo neural?", opcoes:[{texto:"Ácido Valproico / Divalproato", correto:true, fb:"Perfeito! O valproato é altamente teratogênico (risco elevado de defeitos de fechamento do tubo neural e atraso cognitivo)."},{texto:"Lítio em dose baixa", correto:false, fb:"O lítio tem risco associado (anomalia de Ebstein), mas o valproato é formalmente contraindicado pelo perfil teratogênico acentuado."}]}
+      {
+        titulo: "Emergência Psiquiátrica - Distinção Diagnóstica",
+        enunciado: "Paciente internado em uso de Haloperidol há 48 horas evolui com hipertermia (39,2°C), rigidez muscular generalizada em 'cano de chumbo', taquicardia e confusão mental que se desenvolveu progressivamente ao longo de 2 dias. Como diferenciar este quadro de uma Síndrome Serotoninérgica?",
+        opcoes: [
+          {
+            texto: "Síndrome Neuroléptica Maligna: instalação subaguda (1 a 3 dias), rigidez intensa e hiporreflexia (na serotoninérgica o início é súbito <24h com clônus e hiperreflexia)",
+            correto: true,
+            fb: "Perfeito! A principal diferença clínica temporal é o tempo de instalação: a serotoninérgica surge em até 24h (com mioclonias e clônus), enquanto a SNM leva de 1 a 3 dias, cursando com rigidez em cano de chumbo."
+          },
+          {
+            texto: "Síndrome Serotoninérgica: instalação lenta em 7 dias, ausência de febre e presença de rigidez plástica",
+            correto: false,
+            fb: "Incorreto. A toxicidade serotoninérgica é de instalação hiperaguda (<24h) e tipicamente cursa com febre e clônus/hiperreflexia, não rigidez plástica."
+          }
+        ]
+      },
+      {
+        titulo: "Ambulatório de Efeitos Adversos - Movimentos Anormais",
+        enunciado: "Paciente com esquizofrenia crônica em uso contínuo de antipsicóticos típicos há 7 anos apresenta protrusão de língua involuntária, mastigação sem alimento, estalar de lábios e movimentos coreoatetoides de mãos. Qual o diagnóstico e mecanismo?",
+        opcoes: [
+          {
+            texto: "Discinesia Tardia por hipersensibilidade pós-sináptica de receptores D2 após bloqueio prolongado",
+            correto: true,
+            fb: "Exato! Movimentos involuntários repetitivos coreoatetoides oro-faciais e de extremidades definem a Discinesia Tardia após longo tempo de exposição a bloqueadores D2."
+          },
+          {
+            texto: "Distonia Aguda por espasmo muscular reflexo",
+            correto: false,
+            fb: "Incorreto. A distonia aguda surge nos primeiros dias de tratamento com espasmos musculares sustentados (ex.: torcicolo, crise oculógira)."
+          }
+        ]
+      },
+      {
+        titulo: "Investigação Pré-Tratamento - Carbonato de Lítio",
+        enunciado: "Antes de prescrever Carbonato de Lítio para uma paciente jovem com Transtorno Bipolar tipo 1, quais exames obrigatórios devem constar na propedêutica basal?",
+        opcoes: [
+          {
+            texto: "ECG, Beta-hCG, Urina tipo 1, Creatinina/Ureia, TSH/T4 livre e Cálcio sérico",
+            correto: true,
+            fb: "Correto! O lítio pode causar anomalia de Ebstein no feto, disfunção tireoidiana, alteração renal/diabetes insipidus nefrogênico, hiperparatireoidismo/hipercalcemia e arritmias sinusais."
+          },
+          {
+            texto: "Apenas hemograma e coagulograma",
+            correto: false,
+            fb: "Incompleto. O lítio demanda checagem estrutural renal, tireoidiana, metabólica/cálcio e cardíaca antes do início."
+          }
+        ]
+      },
+      {
+        titulo: "Manejo e Seguimento - Janela do Lítio",
+        enunciado: "Paciente em uso de Lítio 900 mg/dia teve a dose ajustada para 1200 mg/dia devido a sintomas maníacos residuais. Em quanto tempo deve ser solicitada a nova litemia sérica e qual a faixa terapêutica alvo?",
+        opcoes: [
+          {
+            texto: "Dosar após 5 a 7 dias da mudança de dose; faixa terapêutica alvo de 0,6 a 1,2 mEq/L",
+            correto: true,
+            fb: "Exato! A litemia atinge novo estado de equilíbrio após 5 a 7 dias da alteração posológica e deve ser mantida estritamente entre 0,6 e 1,2 mEq/L."
+          },
+          {
+            texto: "Dosar após 24 horas; faixa terapêutica alvo de 1,5 a 2,5 mEq/L",
+            correto: false,
+            fb: "Perigoso! Níveis acima de 1,2 a 1,5 mEq/L já representam toxicidade aguda por lítio."
+          }
+        ]
+      },
+      {
+        titulo: "Monitorização Terapêutica em Neurologia e Psiquiatria",
+        enunciado: "Dentre os fármacos antiepilépticos e estabilizadores, quais exigem acompanhamento rotineiro das concentrações séricas no sangue para ajuste de eficácia e toxicidade?",
+        opcoes: [
+          {
+            texto: "Carbamazepina, Fenobarbital, Fenitoína e Valproato (além do Carbonato de Lítio)",
+            correto: true,
+            fb: "Correto! Estes anticonvulsivantes/estabilizadores possuem janelas terapêuticas bem estabelecidas e risco de toxicidade sérica dependente da dose."
+          },
+          {
+            texto: "Apenas Levetiracetam e Gabapentina",
+            correto: false,
+            fb: "Incorreto. Levetiracetam e gabapentinoides habitualmente não requerem dosagem de nível sérico de rotina."
+          }
+        ]
+      }
     ];
 
     /* ======================================================== */
@@ -350,7 +536,7 @@
         b2.className = "w-full text-left p-3 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 border border-transparent flex items-center justify-between";
       } else {
         pharmaDb = db_Antipsicoticos;
-        classesUnicas = ["Típico (1ª Geração)", "Atípico (2ª Geração)", "Atípico (3ª Geração)", "Atípico (Resistência)", "Estabilizador do Humor", "Estabilizador / Antiepiléptico"];
+        classesUnicas = ["Típico (1ª Geração)", "Atípico (2ª Geração)", "Atípico (3ª Geração)", "Estabilizador do Humor", "Estabilizador / Antiepiléptico", "Antiepiléeptico"];
         rxCasos = rxCasos_Antipsicoticos;
         casosClinicos = casosClinicos_Antipsicoticos;
         title.textContent = "Antipsicóticos & Estabilizadores";
