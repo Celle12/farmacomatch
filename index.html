@@ -18,7 +18,7 @@
   <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/50 z-40 hidden md:hidden"></div>
 
   <!-- MENU LATERAL ESQUERDO -->
-  <aside id="sidebar" class="fixed md:static inset-y-0 left-0 w-72 bg-white border-r border-slate-200 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col">
+  <aside id="sidebar" class="fixed md:static inset-y-0 left-0 w-72 bg-white border-r border-slate-200 z-50 transform -translate-x-full md:translate-x-0 transition-all duration-300 flex flex-col shrink-0">
     <div class="p-4 border-b border-slate-100 flex items-center justify-between">
       <div class="flex items-center gap-2">
         <span class="text-2xl">💊</span>
@@ -27,7 +27,7 @@
           <p class="text-[10px] text-slate-400">Internato de Saúde Mental</p>
         </div>
       </div>
-      <button onclick="toggleSidebar()" class="md:hidden text-slate-400 p-1">✕</button>
+      <button onclick="toggleSidebar()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg text-sm" title="Minimizar Menu">✕</button>
     </div>
 
     <div class="p-3 flex-1 overflow-y-auto flex flex-col gap-2">
@@ -36,7 +36,7 @@
       <button onclick="selecionarModulo('antidepressivos')" id="btn-mod-antidepressivos" class="w-full text-left p-3 rounded-xl text-xs font-semibold transition flex items-center justify-between bg-indigo-50 text-indigo-900 border border-indigo-200 shadow-sm">
         <div>
           <span class="block">🧠 Antidepressivos & Ansiolíticos</span>
-          <span class="text-[10px] text-indigo-600 font-normal">ISRS, Duais, Atípicos, Tricíclicos, BZD</span>
+          <span class="text-[10px] text-indigo-600 font-normal">ISRS, Duais, Atípicos, BZD</span>
         </div>
         <span>➔</span>
       </button>
@@ -51,18 +51,23 @@
 
       <div class="mt-4 bg-slate-50 border border-slate-200 rounded-xl p-3 text-[11px] text-slate-600">
         <strong class="text-slate-700 block mb-1">💡 Dica do Internato:</strong>
-        Ao mudar de bloco aqui, os jogos e prescrições se adaptam para os remédios do tema escolhido.
+        Ao alternar de bloco, as prescrições, casos, cartas e o classificador são atualizados com os fármacos correspondentes.
       </div>
     </div>
   </aside>
 
   <!-- ÁREA DIREITA -->
-  <div class="flex-1 flex flex-col min-h-screen">
-    <header class="bg-white border-b border-slate-200 px-4 py-3 flex items-center gap-3">
-      <button onclick="toggleSidebar()" class="md:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg">☰</button>
-      <div>
-        <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md" id="current-module-badge">MÓDULO ATIVO</span>
-        <h2 id="current-module-title" class="text-sm sm:text-base font-extrabold text-slate-800">Antidepressivos & Ansiolíticos</h2>
+  <div class="flex-1 flex flex-col min-h-screen min-w-0">
+    <header class="bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <button onclick="toggleSidebar()" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg flex items-center gap-1.5 text-xs font-semibold border border-slate-200" title="Esconder/Mostrar Barra Lateral">
+          <span>☰</span>
+          <span class="hidden sm:inline">Menu Módulos</span>
+        </button>
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md" id="current-module-badge">MÓDULO ATIVO</span>
+          <h2 id="current-module-title" class="text-sm sm:text-base font-extrabold text-slate-800">Antidepressivos & Ansiolíticos</h2>
+        </div>
       </div>
     </header>
 
@@ -113,7 +118,7 @@
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <div>
                   <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Dose Inicial (mg)</label>
-                  <input type="text" id="rx-input-dose" placeholder="ex.: 10, 20, 50..." required class="w-full bg-white border border-slate-300 rounded-lg p-1.5 text-xs font-semibold">
+                  <input type="text" id="rx-input-dose" placeholder="ex.: 5, 10, 20, 300..." required class="w-full bg-white border border-slate-300 rounded-lg p-1.5 text-xs font-semibold">
                 </div>
                 <div>
                   <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Apresentação</label>
@@ -141,7 +146,7 @@
 
               <div>
                 <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Orientações Clínicas</label>
-                <input type="text" id="rx-input-alerta" placeholder="ex.: Latência terapêutica, não partir cápsula..." class="w-full bg-white border border-slate-300 rounded-lg p-1.5 text-xs">
+                <input type="text" id="rx-input-alerta" placeholder="ex.: Latência terapêutica, orientações dietéticas..." class="w-full bg-white border border-slate-300 rounded-lg p-1.5 text-xs">
               </div>
 
               <button type="submit" id="rx-submit-btn" class="mt-1 w-full bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-2 rounded-xl text-xs transition">
@@ -224,7 +229,9 @@
   </div>
 
   <script>
-    /* BANCO DE DADOS - BLOCO 1 */
+    /* ======================================================== */
+    /* BANCO DE DADOS - MÓDULO 1: ANTIDEPRESSIVOS & ANSIOLÍTICOS */
+    /* ======================================================== */
     const db_Antidepressivos = [
       { id: "fluoxetina", nome: "Fluoxetina", classe: "ISRS", destaque: "20mg pela manhã (máx 80mg). Cápsula no SUS", perfil: "Meia-vida longa; ativador" },
       { id: "sertralina", nome: "Sertralina", classe: "ISRS", destaque: "50mg pela manhã (máx 200-300mg). Seguro pós-IAM", perfil: "Pouca interação no citocromo P450" },
@@ -245,58 +252,10 @@
       { id: "tranilcipromina", nome: "Tranilcipromina", classe: "IMAO", destaque: "Crise hipertensiva com tiramina. 1º em Sd. Serotoninérgica", perfil: "Inibição irreversível da MAO" },
       { id: "diazepam", nome: "Diazepam", classe: "Benzodiazepínico", destaque: "Meia-vida longa (>24-48h). Menor abstinência abrupta", perfil: "Receita azul B1" },
       { id: "clonazepam", nome: "Clonazepam", classe: "Benzodiazepínico", destaque: "Início rápido e meia-vida longa (30-40h)", perfil: "Potente ansiolítico" },
-      { id: "alprazolam", nome: "Alprazolam", classe: "Benzodiazepínico", destaque: "Meia-vida curta/intermediária. Alto risco dependência", perfil: "Abstinência abrupta severa" }
+      { id: "alprazolam", nome: "Alprazolam", classe: "Benzodiazepínico", destaque: "Meia-vida intermediária. Alto risco dependência", perfil: "Abstinência abrupta severa" }
     ];
 
-    /* BANCO DE DADOS - BLOCO 2 */
-    const db_Antipsicoticos = [
-      { id: "haloperidol", nome: "Haloperidol", classe: "Típico (1ª Geração)", destaque: "Alta potência D2; alto risco de SEP e acatisia", perfil: "Padrão para agitação psicomotora e delírios" },
-      { id: "clorpromazina", nome: "Clorpromazina", classe: "Típico (1ª Geração)", destaque: "Baixa potência D2; muito sedativo e hipotensor", perfil: "Alta impregnação anticolinérgica" },
-      { id: "risperidona", nome: "Risperidona", classe: "Atípico (2ª Geração)", destaque: "Aumenta muito a prolactina (galactorreia/amenorreia)", perfil: "Antagonista D2 e 5-HT2A" },
-      { id: "olanzapina", nome: "Olanzapina", classe: "Atípico (2ª Geração)", destaque: "Maior risco de ganho de peso e síndrome metabólica", perfil: "Potente em agitação e mania aguda" },
-      { id: "quetiapina", nome: "Quetiapina", classe: "Atípico (2ª Geração)", destaque: "Sedativo em baixas doses (bloqueio H1); menor SEP", perfil: "Útil em depressão bipolar e insônia" },
-      { id: "aripiprazol", nome: "Aripiprazol", classe: "Atípico (3ª Geração)", destaque: "Agonista parcial D2; neutro no peso/prolactina", perfil: "Excelente perfil metabólico; vigiar acatisia" },
-      { id: "clozapina", nome: "Clozapina", classe: "Atípico (Resistência)", destaque: "Exige hemograma periódico pelo risco de agranulocitose", perfil: "Padrão-ouro para esquizofrenia refratária" },
-      { id: "litio", nome: "Carbonato de Lítio", classe: "Estabilizador do Humor", destaque: "Faixa 0,6-1,0 mEq/L; perigo com AINEs e desidratação", perfil: "Padrão-ouro em bipolaridade e prevenção suicídio" },
-      { id: "valproato", nome: "Ácido Valproico", classe: "Estabilizador / Antiepiléptico", destaque: "Teratogênico (tubo neural); monitorar plaquetas/fígado", perfil: "Excelente para mania aguda e estados mistos" },
-      { id: "lamotrigina", nome: "Lamotrigina", classe: "Estabilizador / Antiepiléptico", destaque: "Titulação lenta para evitar Stevens-Johnson", perfil: "Droga de escolha para fase depressiva bipolar" }
-    ];
-
-    let pharmaDb = db_Antidepressivos;
-    let classesUnicas = ["ISRS", "Dual (IRSN)", "Tricíclico (ADT)", "Atípico", "Modulador Serotonina", "IMAO", "Benzodiazepínico"];
-
-    function toggleSidebar() {
-      const s = document.getElementById('sidebar');
-      const o = document.getElementById('sidebar-overlay');
-      s.classList.toggle('-translate-x-full');
-      o.classList.toggle('hidden');
-    }
-
-    function selecionarModulo(mod) {
-      const title = document.getElementById('current-module-title');
-      const b1 = document.getElementById('btn-mod-antidepressivos');
-      const b2 = document.getElementById('btn-mod-antipsicoticos');
-
-      if (mod === 'antidepressivos') {
-        pharmaDb = db_Antidepressivos;
-        classesUnicas = ["ISRS", "Dual (IRSN)", "Tricíclico (ADT)", "Atípico", "Modulador Serotonina", "IMAO", "Benzodiazepínico"];
-        title.textContent = "Antidepressivos & Ansiolíticos";
-        b1.className = "w-full text-left p-3 rounded-xl text-xs font-semibold bg-indigo-50 text-indigo-900 border border-indigo-200 shadow-sm flex items-center justify-between";
-        b2.className = "w-full text-left p-3 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 border border-transparent flex items-center justify-between";
-      } else {
-        pharmaDb = db_Antipsicoticos;
-        classesUnicas = ["Típico (1ª Geração)", "Atípico (2ª Geração)", "Atípico (3ª Geração)", "Atípico (Resistência)", "Estabilizador do Humor", "Estabilizador / Antiepiléptico"];
-        title.textContent = "Antipsicóticos & Estabilizadores";
-        b2.className = "w-full text-left p-3 rounded-xl text-xs font-semibold bg-indigo-50 text-indigo-900 border border-indigo-200 shadow-sm flex items-center justify-between";
-        b1.className = "w-full text-left p-3 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 border border-transparent flex items-center justify-between";
-      }
-      toggleSidebar();
-      iniciarClassificador();
-      iniciarMatch();
-    }
-
-    /* PRESCRIÇÕES */
-    const rxCasos = [
+    const rxCasos_Antidepressivos = [
       { id:1, paciente:"Mariana, 23 anos (UBS)", demanda:"ISRS Farmácia Básica", historia:"Depressão Maior leve a moderada. Paciente retirará no posto. Prescreva o ISRS da rede básica.", gabarito:{ droga:["fluoxetina"], dose:[20], forma:"capsula", timing:"manha", orientacoes:"Fluoxetina no SUS é CÁPSULA 20mg (não partir). Iniciar 20mg pela manhã." }},
       { id:2, paciente:"Seu Geraldo, 66 anos (Cardio)", demanda:"ISRS Pós-IAM", historia:"Sofreu infarto há 3 meses. Humor deprimido e apatia. Prescreva o ISRS de escolha no coronariopata.", gabarito:{ droga:["sertralina"], dose:[50,25], forma:"comprimido", timing:"manha", orientacoes:"Sertralina é a droga mais segura no pós-IAM (SADHART). Iniciar com 50mg (ou 25mg em idoso)." }},
       { id:3, paciente:"Carla, 31 anos (Ambulatório)", demanda:"ISRS Sedativo / Ansiolítico", historia:"Crises de pânico intensas com insônia. Prescreva o ISRS com perfil mais sedativo e anticolinérgico.", gabarito:{ droga:["paroxetina"], dose:[20], forma:"comprimido", timing:"manha", orientacoes:"Paroxetina: iniciar 20mg pela manhã. Maior risco de ganho ponderal e dano sexual." }},
@@ -315,6 +274,110 @@
       { id:16, paciente:"Rogério, 30 anos (TOC Grave)", demanda:"TRICÍCLICO TOC Refratário", historia:"TOC incapacitante refratário a múltiplos ISRS. Prescreva o tricíclico mais potente para TOC.", gabarito:{ droga:["clomipramina"], dose:[25], forma:"comprimido", timing:"noite", orientacoes:"Clomipramina: 25mg À NOITE (titulando até 150-250mg). Padrão-ouro em TOC refratário." }}
     ];
 
+    const casosClinicos_Antidepressivos = [
+      { titulo:"Lucas, 27 anos - Anamnese Obrigatória", enunciado:"Paciente com depressão maior na UBS. Você decide prescrever Escitalopram. O que deve ser investigado ativamente antes de iniciar?", opcoes:[{texto:"Investigar episódios prévios de euforia ou hipomania (evitar virada maníaca)", correto:true, fb:"Correto! Monoterapia em bipolaridade induz virada maníaca."},{texto:"Investigar alergia a penicilina", correto:false, fb:"Sem relevância direta para introdução de ISRS."}]},
+      { titulo:"Eduardo, 31 anos - Emergência", enunciado:"Uso de Venlafaxina + tramadol. Chega febril (38,8°C), clônus ocular espontâneo e hiperreflexia patelar em menos de 12 horas.", opcoes:[{texto:"Síndrome Serotoninérgica (Critérios de Hunter: suspender drogas + BZD + Ciproeptadina)", correto:true, fb:"Correto! Início agudo com clônus define toxicidade serotoninérgica."},{texto:"Síndrome Neuroléptica Maligna", correto:false, fb:"SNM leva dias e cursa com rigidez em cano de chumbo."}]},
+      { titulo:"Rodrigo, 35 anos - Manejo Sexual", enunciado:"Depressão em remissão estável há 3 meses com Sertralina 100mg. Queixa-se de anorgasmia. O que fazer?", opcoes:[{texto:"Reduzir dose para 50mg (remissão >1 mês), trocar ou associar Bupropiona", correto:true, fb:"Perfeito! Bupropiona é a droga de escolha para recuperar a libido."},{texto:"Suspender abruptamente", correto:false, fb:"Causará síndrome de descontinuação severa."}]}
+    ];
+
+    /* ======================================================== */
+    /* BANCO DE DADOS - MÓDULO 2: ANTIPSICÓTICOS & ESTABILIZAD. */
+    /* ======================================================== */
+    const db_Antipsicoticos = [
+      { id: "haloperidol", nome: "Haloperidol", classe: "Típico (1ª Geração)", destaque: "Alta potência D2; alto risco de SEP e acatisia", perfil: "Padrão para agitação psicomotora e delírios" },
+      { id: "clorpromazina", nome: "Clorpromazina", classe: "Típico (1ª Geração)", destaque: "Baixa potência D2; muito sedativo e hipotensor", perfil: "Alta impregnação anticolinérgica" },
+      { id: "risperidona", nome: "Risperidona", classe: "Atípico (2ª Geração)", destaque: "Aumenta muito a prolactina (galactorreia/amenorreia)", perfil: "Antagonista D2 e 5-HT2A" },
+      { id: "olanzapina", nome: "Olanzapina", classe: "Atípico (2ª Geração)", destaque: "Maior risco de ganho de peso e síndrome metabólica", perfil: "Potente em agitação e mania aguda" },
+      { id: "quetiapina", nome: "Quetiapina", classe: "Atípico (2ª Geração)", destaque: "Sedativo em baixas doses (bloqueio H1); menor SEP", perfil: "Útil em depressão bipolar e insônia" },
+      { id: "aripiprazol", nome: "Aripiprazol", classe: "Atípico (3ª Geração)", destaque: "Agonista parcial D2; neutro no peso/prolactina", perfil: "Excelente perfil metabólico; vigiar acatisia" },
+      { id: "clozapina", nome: "Clozapina", classe: "Atípico (Resistência)", destaque: "Exige hemograma periódico pelo risco de agranulocitose", perfil: "Padrão-ouro para esquizofrenia refratária" },
+      { id: "litio", nome: "Carbonato de Lítio", classe: "Estabilizador do Humor", destaque: "Faixa 0,6-1,0 mEq/L; perigo com AINEs e desidratação", perfil: "Padrão-ouro em bipolaridade e prevenção suicídio" },
+      { id: "valproato", nome: "Ácido Valproico", classe: "Estabilizador / Antiepiléptico", destaque: "Teratogênico (tubo neural); monitorar plaquetas/fígado", perfil: "Excelente para mania aguda e estados mistos" },
+      { id: "lamotrigina", nome: "Lamotrigina", classe: "Estabilizador / Antiepiléptico", destaque: "Titulação lenta para evitar Stevens-Johnson", perfil: "Droga de escolha para fase depressiva bipolar" }
+    ];
+
+    const rxCasos_Antipsicoticos = [
+      { id:1, paciente:"Fernando, 24 anos (Pronto-Socorro)", demanda:"Antipsicótico Típico de Alta Potência", historia:"Primeiro surto psicótico com delírios persecutórios e alucinações auditivas. Prescreva a dose oral inicial do antipsicótico típico clássico de 1ª linha.", gabarito:{ droga:["haloperidol"], dose:[5,2.5,2], forma:"comprimido", timing:"fracionado", orientacoes:"Haloperidol: iniciar com 2,5 a 5 mg/dia (VO). Vigiar sintomas extrapiramidais e acatisia." }},
+      { id:2, paciente:"Camila, 22 anos (Ambulatório)", demanda:"Antipsicótico Atípico & Prolactina", historia:"Quadro esquizofrênico compensado. Indicada Risperidona oral para manutenção. Prescreva a dose inicial.", gabarito:{ droga:["risperidona"], dose:[2,1], forma:"comprimido", timing:"noite", orientacoes:"Risperidona: dose inicial 1 a 2 mg/dia ao deitar (titular até 4-6 mg). Cuidado com hiperprolactinemia." }},
+      { id:3, paciente:"Bruno, 29 anos (Enfermaria)", demanda:"Antipsicótico em Mania Aguda", historia:"Transtorno Bipolar em mania grave e agitação. Indicado o atípico potente no controle agudo, com atenção ao ganho ponderal.", gabarito:{ droga:["olanzapina"], dose:[10,5], forma:"comprimido", timing:"noite", orientacoes:"Olanzapina: 5 a 10 mg/dia ao deitar (máx 20 mg). Monitorar glicemia, peso e perfil lipídico." }},
+      { id:4, paciente:"Leandro, 33 anos (Ambulatório de Bipolar)", demanda:"Estabilizador Padrão-Ouro", historia:"Transtorno Bipolar tipo 1 com histórico de ideação suicida prévia. Prescreva o carbonato de lítio em dose inicial de adaptação.", gabarito:{ droga:["litio","carbonato de litio"], dose:[300,600], forma:"comprimido", timing:"fracionado", orientacoes:"Carbonato de Lítio: iniciar com 300 a 600 mg/dia. Coletar litemia em 5 a 7 dias no vale (meta 0,6-1,0 mEq/L)." }},
+      { id:5, paciente:"Juliana, 35 anos (Ambulatório)", demanda:"Estabilizador para Depressão Bipolar", historia:"Episódio depressivo em paciente com Transtorno Bipolar. Prescreva o anticonvulsivante que exige titulação semanal lenta para evitar Stevens-Johnson.", gabarito:{ droga:["lamotrigina"], dose:[25], forma:"comprimido", timing:"manha", orientacoes:"Lamotrigina: 25 mg/dia nas semanas 1 e 2. Dobrar a cada 2 semanas para evitar erupções cutâneas graves." }},
+      { id:6, paciente:"Carlos, 40 anos (Ambulatório de Refratariedade)", demanda:"Antipsicótico de Última Linha", historia:"Esquizofrenia refratária a haloperidol e olanzapina com agressividade persistente. Prescreva a molécula padrão-ouro que exige hemograma obrigatório.", gabarito:{ droga:["clozapina"], dose:[25,12.5], forma:"comprimido", timing:"noite", orientacoes:"Clozapina: iniciar com 12,5 a 25 mg ao deitar (titulação lenta). Risco de agranulocitose." }}
+    ];
+
+    const casosClinicos_Antipsicoticos = [
+      { titulo:"Renan, 25 anos - Impregnação Extrapiramidal", enunciado:"Após 2 dias de Haloperidol 10mg/dia, o paciente desenvolve torcicolo espástico súbito, desvio ocular para cima (crise oculógira) e trismo. Qual a conduta?", opcoes:[{texto:"Distonia Aguda (Tratamento: Biperideno 5mg IM/IV ou Prometazina)", correto:true, fb:"Correto! A distonia aguda surge nas primeiras 48h de antipsicóticos típicos de alta potência e responde rapidamente a anticolinérgicos."},{texto:"Aumentar a dose do Haloperidol para sedar", correto:false, fb:"Iatrogenia grave! Pioraria dramaticamente o bloqueio dopaminérgico."}]},
+      { titulo:"Sabrina, 31 anos - Avaliação Laboratorial do Lítio", enunciado:"Paciente em uso de Lítio há 3 anos chega com queixa de sonolência, ganho de peso, pele seca e constipação. Qual exame deve ser solicitado imediatamente?", opcoes:[{texto:"TSH e T4 livre (Hipotireoidismo induzido por lítio)", correto:true, fb:"Correto! O lítio inibe a síntese e liberação dos hormônios tireoidianos, sendo causa frequente de hipotireoidismo."},{texto:"Apenas colonoscopia", correto:false, fb:"Incorreto. Os sintomas apontam para descompensação tireoidiana por toxicidade crônica do lítio."}]},
+      { titulo:"Mariana, 26 anos - Teratogenicidade", enunciado:"Mulher jovem em idade fértil com Transtorno Bipolar planejando gestação para os próximos meses. Qual estabilizador deve ser formalmente EVITADO pelo alto risco de espinha bífida e defeitos do tubo neural?", opcoes:[{texto:"Ácido Valproico / Divalproato", correto:true, fb:"Perfeito! O valproato é altamente teratogênico (risco elevado de defeitos de fechamento do tubo neural e atraso cognitivo)."},{texto:"Lítio em dose baixa", correto:false, fb:"O lítio tem risco associado (anomalia de Ebstein), mas o valproato é formalmente contraindicado pelo perfil teratogênico acentuado."}]}
+    ];
+
+    /* ======================================================== */
+    /* ESTADO GLOBAL                                            */
+    /* ======================================================== */
+    let moduloAtual = "antidepressivos";
+    let pharmaDb = db_Antidepressivos;
+    let classesUnicas = ["ISRS", "Dual (IRSN)", "Tricíclico (ADT)", "Atípico", "Modulador Serotonina", "IMAO", "Benzodiazepínico"];
+    let rxCasos = rxCasos_Antidepressivos;
+    let casosClinicos = casosClinicos_Antidepressivos;
+    let modoAtual = "prescricao";
+
+    function toggleSidebar() {
+      const s = document.getElementById('sidebar');
+      const o = document.getElementById('sidebar-overlay');
+      const isClosed = s.classList.contains('-translate-x-full') || s.classList.contains('md:hidden');
+      
+      // Mobile
+      s.classList.toggle('-translate-x-full');
+      o.classList.toggle('hidden');
+      
+      // Desktop
+      s.classList.toggle('md:hidden');
+    }
+
+    function selecionarModulo(mod) {
+      moduloAtual = mod;
+      const title = document.getElementById('current-module-title');
+      const b1 = document.getElementById('btn-mod-antidepressivos');
+      const b2 = document.getElementById('btn-mod-antipsicoticos');
+
+      if (mod === 'antidepressivos') {
+        pharmaDb = db_Antidepressivos;
+        classesUnicas = ["ISRS", "Dual (IRSN)", "Tricíclico (ADT)", "Atípico", "Modulador Serotonina", "IMAO", "Benzodiazepínico"];
+        rxCasos = rxCasos_Antidepressivos;
+        casosClinicos = casosClinicos_Antidepressivos;
+        title.textContent = "Antidepressivos & Ansiolíticos";
+        b1.className = "w-full text-left p-3 rounded-xl text-xs font-semibold bg-indigo-50 text-indigo-900 border border-indigo-200 shadow-sm flex items-center justify-between";
+        b2.className = "w-full text-left p-3 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 border border-transparent flex items-center justify-between";
+      } else {
+        pharmaDb = db_Antipsicoticos;
+        classesUnicas = ["Típico (1ª Geração)", "Atípico (2ª Geração)", "Atípico (3ª Geração)", "Atípico (Resistência)", "Estabilizador do Humor", "Estabilizador / Antiepiléptico"];
+        rxCasos = rxCasos_Antipsicoticos;
+        casosClinicos = casosClinicos_Antipsicoticos;
+        title.textContent = "Antipsicóticos & Estabilizadores";
+        b2.className = "w-full text-left p-3 rounded-xl text-xs font-semibold bg-indigo-50 text-indigo-900 border border-indigo-200 shadow-sm flex items-center justify-between";
+        b1.className = "w-full text-left p-3 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 border border-transparent flex items-center justify-between";
+      }
+
+      // Fecha sidebar no mobile se estiver aberta
+      if (window.innerWidth < 768) {
+        const s = document.getElementById('sidebar');
+        const o = document.getElementById('sidebar-overlay');
+        s.classList.add('-translate-x-full');
+        o.classList.add('hidden');
+      }
+
+      // Reinicia índices
+      rxIndex = 0; rxApproved = 0;
+      cIdx = 0; cScore = 0;
+
+      // Recarrega a tela ativa
+      if (modoAtual === 'prescricao') carregarPrescricao();
+      if (modoAtual === 'casos') renderizarCaso();
+      if (modoAtual === 'match') iniciarMatch();
+      if (modoAtual === 'classificador') iniciarClassificador();
+    }
+
+    /* PRESCRIÇÕES */
     let rxIndex = 0, rxApproved = 0;
 
     function carregarPrescricao() {
@@ -353,8 +416,8 @@
         ok = false;
       }
 
-      if (timing === c.timing) {
-        checks.push(`<span class="text-emerald-600 font-bold">✓ Horário Correto</span>`);
+      if (timing === c.timing || (c.timing === 'fracionado' && (timing === 'fracionado' || timing === 'manha'))) {
+        checks.push(`<span class="text-emerald-600 font-bold">✓ Horário Adequado</span>`);
       } else {
         checks.push(`<span class="text-rose-600 font-bold">✗ Horário Inadequado</span>`);
         ok = false;
@@ -372,7 +435,7 @@
       }
 
       document.getElementById('rx-checklist').innerHTML = checks.map(x => `<div>${x}</div>`).join('');
-      document.getElementById('rx-gabarito').innerHTML = `<strong>Justificativa:</strong> ${c.orientacoes}`;
+      document.getElementById('rx-gabarito').innerHTML = `<strong>Justificativa Clínica:</strong> ${c.orientacoes}`;
       document.getElementById('rx-submit-btn').classList.add('hidden');
       document.getElementById('rx-feedback-box').classList.remove('hidden');
     }
@@ -383,11 +446,6 @@
     }
 
     /* CASOS CLÍNICOS */
-    const casosClinicos = [
-      { titulo:"Lucas, 27 anos - Anamnese Obrigatória", enunciado:"Paciente com depressão maior na UBS. Você decide prescrever Escitalopram. O que deve ser perguntado antes de iniciar?", opcoes:[{texto:"Investigar episódios prévios de euforia ou hipomania (evitar virada maníaca)", correto:true, fb:"Correto! Monoterapia em bipolaridade induz virada maníaca."},{texto:"Investigar alergia a penicilina", correto:false, fb:"Sem relevância direta para introdução de ISRS."}]},
-      { titulo:"Eduardo, 31 anos - Emergência", enunciado:"Uso de Venlafaxina + tramadol. Chega febril (38,8°C), clônus ocular espontâneo e hiperreflexia patelar em menos de 12 horas.", opcoes:[{texto:"Síndrome Serotoninérgica (Critérios de Hunter: suspender drogas + BZD + Ciproeptadina)", correto:true, fb:"Correto! Início agudo com clônus define toxicidade serotoninérgica."},{texto:"Síndrome Neuroléptica Maligna", correto:false, fb:"SNM leva dias e cursa com rigidez em cano de chumbo."}]},
-      { titulo:"Rodrigo, 35 anos - Manejo Sexual", enunciado:"Depressão em remissão estável há 3 meses com Sertralina 100mg. Queixa-se de anorgasmia. O que fazer?", opcoes:[{texto:"Reduzir dose para 50mg (remissão >1 mês), trocar ou associar Bupropiona", correto:true, fb:"Perfeito! Bupropiona é a droga de escolha para recuperar a libido."},{texto:"Suspender abruptamente", correto:false, fb:"Causará síndrome de descontinuação severa."}]}
-    ];
     let cIdx = 0, cScore = 0, cAns = false;
 
     function renderizarCaso() {
@@ -539,6 +597,7 @@
 
     /* NAVEGAÇÃO */
     function switchMode(m) {
+      modoAtual = m;
       ['prescricao','casos','match','classificador'].forEach(id => {
         document.getElementById(`section-${id}`).classList.add('hidden');
         document.getElementById(`nav-${id}`).className = "py-2 px-2 text-xs font-semibold rounded-xl transition text-slate-600 hover:bg-slate-100";
@@ -552,6 +611,7 @@
       if (m === 'classificador') iniciarClassificador();
     }
 
+    // Inicialização
     carregarPrescricao();
     renderizarCaso();
     iniciarMatch();
