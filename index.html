@@ -3,1004 +3,558 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FarmacoMatch - Psiquiatria & Saúde Mental</title>
+  <title>FarmacoMatch - Saúde Mental</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    .card-selected {
-      border-color: #4f46e5 !important;
-      background-color: #e0e7ff !important;
-      color: #312e81 !important;
-      transform: scale(1.02);
-    }
-    .card-matched {
-      opacity: 0.25;
-      pointer-events: none;
-      border-color: #10b981 !important;
-      background-color: #d1fae5 !important;
-      text-decoration: line-through;
-    }
-    .receituario-paper {
-      background: #fdfdfd;
-      background-image: radial-gradient(#e2e8f0 1.2px, transparent 0);
-      background-size: 16px 16px;
-    }
-    .stamp-approved {
-      border: 3px solid #059669;
-      color: #059669;
-      text-transform: uppercase;
-      font-weight: 900;
-      letter-spacing: 0.1em;
-      transform: rotate(-6deg);
-    }
-    .stamp-rejected {
-      border: 3px solid #dc2626;
-      color: #dc2626;
-      text-transform: uppercase;
-      font-weight: 900;
-      letter-spacing: 0.1em;
-      transform: rotate(-6deg);
-    }
+    .card-selected { border-color: #4f46e5 !important; background-color: #e0e7ff !important; color: #312e81 !important; transform: scale(1.02); }
+    .card-matched { opacity: 0.25; pointer-events: none; border-color: #10b981 !important; background-color: #d1fae5 !important; text-decoration: line-through; }
+    .receituario-paper { background: #fdfdfd; background-image: radial-gradient(#e2e8f0 1.2px, transparent 0); background-size: 16px 16px; }
+    .stamp-approved { border: 3px solid #059669; color: #059669; text-transform: uppercase; font-weight: 900; letter-spacing: 0.1em; transform: rotate(-5deg); }
+    .stamp-rejected { border: 3px solid #dc2626; color: #dc2626; text-transform: uppercase; font-weight: 900; letter-spacing: 0.1em; transform: rotate(-5deg); }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col items-center p-3 sm:p-5">
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col md:flex-row">
 
-  <!-- Header -->
-  <header class="w-full max-w-2xl text-center mb-4">
-    <div class="flex items-center justify-center gap-2">
-      <span class="text-3xl">💊</span>
-      <h1 class="text-2xl sm:text-3xl font-extrabold text-indigo-700 tracking-tight">FarmacoMatch</h1>
-    </div>
-    <p class="text-xs sm:text-sm text-slate-500 mt-0.5">Internato de Saúde Mental • Prescrição Racional & Conduta Clínica</p>
+  <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-900/50 z-40 hidden md:hidden"></div>
 
-    <!-- Navegação Superior -->
-    <nav class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 sm:gap-2 mt-4 bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200">
-      <button onclick="switchMode('prescricao')" id="nav-prescricao" class="py-2 px-2 text-xs font-semibold rounded-xl transition text-slate-600 hover:bg-slate-100">
-        📝 Prescrição Real
-      </button>
-      <button onclick="switchMode('casos')" id="nav-casos" class="py-2 px-2 text-xs font-semibold rounded-xl transition text-slate-600 hover:bg-slate-100">
-        📋 Casos Clínicos
-      </button>
-      <button onclick="switchMode('match')" id="nav-match" class="py-2 px-2 text-xs font-semibold rounded-xl transition text-slate-600 hover:bg-slate-100">
-        🃏 Match de Cartas
-      </button>
-      <button onclick="switchMode('classificador')" id="nav-classificador" class="py-2 px-2 text-xs font-semibold rounded-xl transition bg-indigo-600 text-white shadow-sm">
-        ⚡ Classificador
-      </button>
-    </nav>
-  </header>
-
-  <!-- ========================================================= -->
-  <!-- MODO 1: PRESCRIÇÃO REAL                                   -->
-  <!-- ========================================================= -->
-  <section id="section-prescricao" class="w-full max-w-2xl hidden flex flex-col gap-4">
-    <div class="flex justify-between items-center bg-white px-4 py-2.5 rounded-xl shadow-sm border border-slate-200 text-xs sm:text-sm">
-      <span class="text-slate-500 font-medium">Paciente da Fila: <strong id="rx-progress" class="text-slate-800">1/16</strong></span>
-      <span class="text-slate-500 font-medium">Receitas Aprovadas: <strong id="rx-score" class="text-emerald-600">0</strong></span>
-    </div>
-
-    <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-5 flex flex-col gap-4">
-      <div class="bg-indigo-50/70 border border-indigo-100 rounded-xl p-4">
-        <div class="flex items-center justify-between mb-1">
-          <span class="bg-indigo-600 text-white text-[11px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Demanda do Atendimento</span>
-          <span id="rx-target-type" class="text-xs font-semibold text-indigo-900 bg-white px-2 py-0.5 rounded-md border border-indigo-200"></span>
-        </div>
-        <h2 id="rx-paciente-nome" class="text-sm font-bold text-slate-800 mt-2"></h2>
-        <p id="rx-paciente-historia" class="text-slate-600 text-xs sm:text-sm leading-relaxed mt-1"></p>
-      </div>
-
-      <div class="receituario-paper border-2 border-slate-300 rounded-2xl p-5 shadow-inner relative flex flex-col gap-4">
-        <div class="border-b border-slate-300 pb-3 flex justify-between items-center">
-          <div>
-            <h3 class="font-bold text-slate-800 text-sm tracking-wide uppercase">Receituário Médico Ambulatorial</h3>
-            <p class="text-[11px] text-slate-400">Sistema Único de Saúde & Clínica Médica</p>
-          </div>
-          <div class="text-right">
-            <span class="text-[10px] font-mono text-slate-400 block">Via de Prescrição</span>
-            <span id="rx-data-hoje" class="text-xs text-slate-600 font-semibold"></span>
-          </div>
-        </div>
-
-        <form id="rx-form" onsubmit="event.preventDefault(); emitirReceita();" class="flex flex-col gap-3.5">
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <div>
-              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Via de Uso</label>
-              <select id="rx-input-via" class="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs font-semibold text-slate-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                <option value="oral">Uso Oral</option>
-                <option value="im">Uso Intramuscular (IM)</option>
-                <option value="iv">Uso Intravenoso (IV)</option>
-                <option value="sublingual">Uso Sublingual</option>
-              </select>
-            </div>
-            <div class="sm:col-span-2">
-              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Fármaco (Nome Genérico)</label>
-              <input type="text" id="rx-input-droga" placeholder="Digite o nome da molécula genérica..." required class="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <div>
-              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Dose Inicial (mg)</label>
-              <input type="text" id="rx-input-dose" placeholder="ex.: 10, 20, 50, 37.5..." required class="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Forma Farmacêutica</label>
-              <select id="rx-input-forma" class="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs font-semibold text-slate-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                <option value="comprimido">Comprimido(s)</option>
-                <option value="capsula">Cápsula(s)</option>
-                <option value="gotas">Gotas / Solução Oral</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Horário / Período</label>
-              <select id="rx-input-timing" class="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs font-semibold text-slate-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                <option value="manha">☀️ Manhã / Desjejum</option>
-                <option value="almoco">🍽️ Almoço</option>
-                <option value="noite">🌙 Noite / Ao Deitar</option>
-                <option value="fracionado">⏱️ Fracionado (12/12h)</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Posologia Textual (Instruções ao Paciente)</label>
-            <input type="text" id="rx-input-posologia" placeholder="ex.: Tomar 1 cápsula/comprimido pela manhã..." required class="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-          </div>
-
-          <div>
-            <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Orientações Clínicas / Alertas de Segurança</label>
-            <input type="text" id="rx-input-alerta" placeholder="ex.: Latência de ação, orientações de fracionamento, cuidados dietéticos..." class="w-full bg-white border border-slate-300 rounded-lg p-2 text-xs text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-          </div>
-
-          <button type="submit" id="rx-submit-btn" class="mt-2 w-full bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-2.5 rounded-xl text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2">
-            <span>🖋️ Carimbar & Emitir Prescrição</span>
-          </button>
-        </form>
-
-        <div id="rx-feedback-box" class="hidden mt-2 p-4 rounded-xl border bg-white shadow-sm flex flex-col gap-3">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-slate-500 uppercase">Avaliação do Preceptor:</span>
-            <div id="rx-stamp" class="px-3 py-1 text-xs rounded"></div>
-          </div>
-          
-          <div id="rx-checklist" class="text-xs space-y-1.5 border-t border-slate-100 pt-2"></div>
-          <div id="rx-gabarito" class="text-xs bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-slate-700"></div>
-
-          <button onclick="proximaPrescricao()" class="w-full bg-slate-800 hover:bg-slate-900 text-white py-2 rounded-xl text-xs font-semibold transition mt-1">
-            Chamar Próximo Paciente ➔
-          </button>
+  <!-- MENU LATERAL ESQUERDO -->
+  <aside id="sidebar" class="fixed md:static inset-y-0 left-0 w-72 bg-white border-r border-slate-200 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col">
+    <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl">💊</span>
+        <div>
+          <h1 class="text-base font-black text-indigo-700 leading-tight">FarmacoMatch</h1>
+          <p class="text-[10px] text-slate-400">Internato de Saúde Mental</p>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- ========================================================= -->
-  <!-- MODO 2: CASOS CLÍNICOS                                    -->
-  <!-- ========================================================= -->
-  <section id="section-casos" class="w-full max-w-2xl hidden flex flex-col gap-4">
-    <div class="flex justify-between items-center bg-white px-4 py-2.5 rounded-xl shadow-sm border border-slate-200 text-xs sm:text-sm">
-      <span class="text-slate-500 font-medium">Caso: <strong id="caso-progress" class="text-slate-800">1/3</strong></span>
-      <span class="text-slate-500 font-medium">Score: <strong id="caso-score" class="text-indigo-600">0</strong></span>
+      <button onclick="toggleSidebar()" class="md:hidden text-slate-400 p-1">✕</button>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-5 flex flex-col gap-4">
-      <div class="bg-indigo-50/70 border border-indigo-100 rounded-xl p-4">
-        <div class="flex items-center gap-2 mb-1.5">
-          <span class="bg-indigo-600 text-white text-[11px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">História Clínica</span>
-          <span id="caso-titulo" class="text-xs font-semibold text-indigo-900"></span>
-        </div>
-        <p id="caso-enunciado" class="text-slate-700 text-sm leading-relaxed"></p>
-      </div>
-
-      <div>
-        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Qual a conduta correta?</h3>
-        <div id="caso-opcoes" class="grid grid-cols-1 gap-2"></div>
-      </div>
-
-      <div id="caso-feedback" class="hidden rounded-xl p-4 border transition">
-        <div class="flex items-center gap-2 mb-1">
-          <span id="caso-badge" class="text-xs px-2.5 py-0.5 rounded-full font-bold"></span>
-        </div>
-        <p id="caso-feedback-texto" class="text-xs sm:text-sm leading-relaxed mt-2"></p>
-        <div id="caso-perola" class="mt-3 pt-3 border-t border-slate-200 text-xs text-slate-600"></div>
-
-        <button onclick="proximoCaso()" class="mt-4 w-full bg-slate-800 hover:bg-slate-900 text-white py-2.5 rounded-xl font-medium text-xs sm:text-sm transition">
-          Próximo Caso ➔
-        </button>
-      </div>
-
-      <div id="casos-game-over" class="hidden text-center py-6">
-        <h2 class="text-xl font-bold text-slate-800 mb-1">Treinamento Concluído! 🎉</h2>
-        <p class="text-sm text-slate-600 mb-4" id="casos-final-score"></p>
-        <button onclick="reiniciarCasos()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl font-semibold text-sm transition">
-          Reiniciar Casos
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================================================= -->
-  <!-- MODO 3: MATCH DE COLUNAS                                  -->
-  <!-- ========================================================= -->
-  <section id="section-match" class="w-full max-w-2xl hidden flex flex-col gap-4">
-    <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 flex justify-between items-center text-xs sm:text-sm">
-      <span class="text-slate-500">Pares Restantes: <strong id="match-remaining" class="text-indigo-600">5</strong></span>
-      <button onclick="iniciarMatch()" class="text-xs text-slate-500 hover:text-indigo-600 font-medium underline">Embaralhar Novo Jogo</button>
-    </div>
-
-    <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-4 sm:p-5">
-      <p class="text-xs text-slate-500 mb-3 text-center">Selecione uma droga na esquerda e conecte com seu perfil/dose/efeito na direita:</p>
+    <div class="p-3 flex-1 overflow-y-auto flex flex-col gap-2">
+      <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">Módulos de Estudo</p>
       
-      <div class="grid grid-cols-2 gap-3">
-        <div id="match-col-drugs" class="flex flex-col gap-2"></div>
-        <div id="match-col-targets" class="flex flex-col gap-2"></div>
-      </div>
+      <button onclick="selecionarModulo('antidepressivos')" id="btn-mod-antidepressivos" class="w-full text-left p-3 rounded-xl text-xs font-semibold transition flex items-center justify-between bg-indigo-50 text-indigo-900 border border-indigo-200 shadow-sm">
+        <div>
+          <span class="block">🧠 Antidepressivos & Ansiolíticos</span>
+          <span class="text-[10px] text-indigo-600 font-normal">ISRS, Duais, Atípicos, Tricíclicos, BZD</span>
+        </div>
+        <span>➔</span>
+      </button>
 
-      <div id="match-complete" class="hidden text-center py-6 mt-4 border-t border-slate-100">
-        <h3 class="text-lg font-bold text-emerald-600 mb-1">Excelente! Todas as associações corretas! 🎯</h3>
-        <p class="text-xs text-slate-500 mb-4">Você consolidou as características práticas dessas moléculas.</p>
-        <button onclick="iniciarMatch()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">
-          Novo Deck
-        </button>
-      </div>
-    </div>
-  </section>
+      <button onclick="selecionarModulo('antipsicoticos')" id="btn-mod-antipsicoticos" class="w-full text-left p-3 rounded-xl text-xs font-semibold transition flex items-center justify-between text-slate-600 hover:bg-slate-50 border border-transparent">
+        <div>
+          <span class="block">⚡ Antipsicóticos & Estabilizadores</span>
+          <span class="text-[10px] text-slate-400 font-normal">Lítio, Valproato, Típicos/Atípicos</span>
+        </div>
+        <span class="text-slate-400">➔</span>
+      </button>
 
-  <!-- ========================================================= -->
-  <!-- MODO 4: CLASSIFICADOR RELÂMPAGO                           -->
-  <!-- ========================================================= -->
-  <section id="section-classificador" class="w-full max-w-2xl flex flex-col gap-4">
-    <div class="bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 flex justify-between items-center text-xs sm:text-sm">
-      <span class="text-slate-500">Sequência Atual: <strong id="classif-streak" class="text-emerald-600">0</strong></span>
-      <span class="text-slate-500">Cartas Restantes: <strong id="classif-count" class="text-indigo-600">0</strong></span>
-    </div>
-
-    <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-5 flex flex-col items-center">
-      <div id="classif-card" class="w-full max-w-sm bg-indigo-600 text-white p-6 rounded-2xl shadow-lg text-center mb-6 transition-all duration-300">
-        <span class="text-[10px] tracking-widest uppercase bg-white/20 px-2.5 py-0.5 rounded-full font-bold">Fármaco em Avaliação</span>
-        <h2 id="classif-drug-name" class="text-2xl font-black mt-2 tracking-tight">---</h2>
-        <p id="classif-drug-hint" class="text-xs text-indigo-100 mt-1.5 italic">Qual a classe desta molécula?</p>
-      </div>
-
-      <div id="classif-board" class="w-full">
-        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 text-center">Classifique esta molécula:</p>
-        <div id="classif-buttons" class="grid grid-cols-2 gap-2.5"></div>
-      </div>
-
-      <div id="classif-feedback" class="mt-4 text-xs font-semibold h-4 text-center"></div>
-
-      <div id="classif-end" class="hidden text-center py-6 mt-4 border-t border-slate-100 w-full">
-        <h3 class="text-lg font-bold text-slate-800 mb-1">Deck Esgotado! ⚡</h3>
-        <p id="classif-final-text" class="text-xs text-slate-600 mb-4"></p>
-        <button onclick="iniciarClassificador()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition">
-          Reiniciar Deck
-        </button>
+      <div class="mt-4 bg-slate-50 border border-slate-200 rounded-xl p-3 text-[11px] text-slate-600">
+        <strong class="text-slate-700 block mb-1">💡 Dica do Internato:</strong>
+        Ao mudar de bloco aqui, os jogos e prescrições se adaptam para os remédios do tema escolhido.
       </div>
     </div>
-  </section>
+  </aside>
+
+  <!-- ÁREA DIREITA -->
+  <div class="flex-1 flex flex-col min-h-screen">
+    <header class="bg-white border-b border-slate-200 px-4 py-3 flex items-center gap-3">
+      <button onclick="toggleSidebar()" class="md:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg">☰</button>
+      <div>
+        <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md" id="current-module-badge">MÓDULO ATIVO</span>
+        <h2 id="current-module-title" class="text-sm sm:text-base font-extrabold text-slate-800">Antidepressivos & Ansiolíticos</h2>
+      </div>
+    </header>
+
+    <main class="flex-1 p-3 sm:p-5 flex flex-col items-center">
+      <!-- Abas de Jogo -->
+      <nav class="w-full max-w-2xl grid grid-cols-2 sm:grid-cols-4 gap-1.5 mb-4 bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200">
+        <button onclick="switchMode('prescricao')" id="nav-prescricao" class="py-2 px-2 text-xs font-semibold rounded-xl transition bg-indigo-600 text-white shadow-sm">📝 Prescrição Real</button>
+        <button onclick="switchMode('casos')" id="nav-casos" class="py-2 px-2 text-xs font-semibold rounded-xl transition text-slate-600 hover:bg-slate-100">📋 Casos Clínicos</button>
+        <button onclick="switchMode('match')" id="nav-match" class="py-2 px-2 text-xs font-semibold rounded-xl transition text-slate-600 hover:bg-slate-100">🃏 Match de Cartas</button>
+        <button onclick="switchMode('classificador')" id="nav-classificador" class="py-2 px-2 text-xs font-semibold rounded-xl transition text-slate-600 hover:bg-slate-100">⚡ Classificador</button>
+      </nav>
+
+      <!-- SEÇÃO 1: PRESCRIÇÃO -->
+      <section id="section-prescricao" class="w-full max-w-2xl flex flex-col gap-3">
+        <div class="flex justify-between items-center bg-white px-4 py-2 rounded-xl border border-slate-200 text-xs">
+          <span>Paciente: <strong id="rx-progress" class="text-slate-800">1/16</strong></span>
+          <span>Aprovadas: <strong id="rx-score" class="text-emerald-600">0</strong></span>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-4 flex flex-col gap-3">
+          <div class="bg-indigo-50/70 border border-indigo-100 rounded-xl p-3">
+            <span id="rx-target-type" class="text-[10px] font-bold text-indigo-700 bg-white px-2 py-0.5 rounded border border-indigo-200 uppercase"></span>
+            <h2 id="rx-paciente-nome" class="text-sm font-bold text-slate-800 mt-1"></h2>
+            <p id="rx-paciente-historia" class="text-slate-600 text-xs leading-relaxed mt-1"></p>
+          </div>
+
+          <div class="receituario-paper border-2 border-slate-300 rounded-xl p-4 flex flex-col gap-3">
+            <div class="border-b border-slate-300 pb-2 flex justify-between items-center">
+              <span class="font-bold text-xs text-slate-800 uppercase">Receituário Ambulatorial</span>
+              <span id="rx-data-hoje" class="text-xs text-slate-500 font-medium"></span>
+            </div>
+
+            <form id="rx-form" onsubmit="event.preventDefault(); emitirReceita();" class="flex flex-col gap-2.5">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Via</label>
+                  <select id="rx-input-via" class="w-full bg-white border border-slate-300 rounded-lg p-1.5 text-xs font-semibold">
+                    <option value="oral">Uso Oral</option>
+                    <option value="im">Uso Intramuscular</option>
+                  </select>
+                </div>
+                <div class="sm:col-span-2">
+                  <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Fármaco (Genérico)</label>
+                  <input type="text" id="rx-input-droga" placeholder="Nome da molécula..." required class="w-full bg-white border border-slate-300 rounded-lg p-1.5 text-xs font-semibold">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Dose Inicial (mg)</label>
+                  <input type="text" id="rx-input-dose" placeholder="ex.: 10, 20, 50..." required class="w-full bg-white border border-slate-300 rounded-lg p-1.5 text-xs font-semibold">
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Apresentação</label>
+                  <select id="rx-input-forma" class="w-full bg-white border border-slate-300 rounded-lg p-1.5 text-xs font-semibold">
+                    <option value="comprimido">Comprimido(s)</option>
+                    <option value="capsula">Cápsula(s)</option>
+                    <option value="gotas">Gotas</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Horário</label>
+                  <select id="rx-input-timing" class="w-full bg-white border border-slate-300 rounded-lg p-1.5 text-xs font-semibold">
+                    <option value="manha">☀️ Manhã / Desjejum</option>
+                    <option value="almoco">🍽️ Almoço</option>
+                    <option value="noite">🌙 Noite / Ao Deitar</option>
+                    <option value="fracionado">⏱️ Fracionado (12/12h)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Posologia Textual</label>
+                <input type="text" id="rx-input-posologia" placeholder="ex.: Tomar 1 cp pela manhã..." required class="w-full bg-white border border-slate-300 rounded-lg p-1.5 text-xs">
+              </div>
+
+              <div>
+                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Orientações Clínicas</label>
+                <input type="text" id="rx-input-alerta" placeholder="ex.: Latência terapêutica, não partir cápsula..." class="w-full bg-white border border-slate-300 rounded-lg p-1.5 text-xs">
+              </div>
+
+              <button type="submit" id="rx-submit-btn" class="mt-1 w-full bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-2 rounded-xl text-xs transition">
+                🖋️ Carimbar & Emitir Prescrição
+              </button>
+            </form>
+
+            <div id="rx-feedback-box" class="hidden mt-2 p-3 rounded-xl border bg-white shadow-sm flex flex-col gap-2">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-bold text-slate-500 uppercase">Preceptor:</span>
+                <div id="rx-stamp" class="px-2.5 py-0.5 text-xs rounded font-bold"></div>
+              </div>
+              <div id="rx-checklist" class="text-xs space-y-1 border-t pt-2"></div>
+              <div id="rx-gabarito" class="text-xs bg-slate-50 p-2 rounded border text-slate-700"></div>
+              <button onclick="proximaPrescricao()" class="w-full bg-slate-800 hover:bg-slate-900 text-white py-1.5 rounded-lg text-xs font-semibold transition mt-1">Próximo Paciente ➔</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEÇÃO 2: CASOS -->
+      <section id="section-casos" class="w-full max-w-2xl hidden flex flex-col gap-3">
+        <div class="flex justify-between items-center bg-white px-4 py-2 rounded-xl border border-slate-200 text-xs">
+          <span>Caso: <strong id="caso-progress" class="text-slate-800">1/3</strong></span>
+          <span>Score: <strong id="caso-score" class="text-indigo-600">0</strong></span>
+        </div>
+        <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-4 flex flex-col gap-3">
+          <div class="bg-indigo-50/70 border border-indigo-100 rounded-xl p-3">
+            <span id="caso-titulo" class="text-xs font-bold text-indigo-900 block mb-1"></span>
+            <p id="caso-enunciado" class="text-slate-700 text-xs sm:text-sm leading-relaxed"></p>
+          </div>
+          <div id="caso-opcoes" class="grid grid-cols-1 gap-2"></div>
+          <div id="caso-feedback" class="hidden rounded-xl p-3 border">
+            <span id="caso-badge" class="text-[10px] px-2 py-0.5 rounded font-bold"></span>
+            <p id="caso-feedback-texto" class="text-xs leading-relaxed mt-2"></p>
+            <div id="caso-perola" class="mt-2 pt-2 border-t text-[11px] text-slate-600"></div>
+            <button onclick="proximoCaso()" class="mt-3 w-full bg-slate-800 text-white py-1.5 rounded-lg text-xs">Próximo Caso ➔</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEÇÃO 3: MATCH -->
+      <section id="section-match" class="w-full max-w-2xl hidden flex flex-col gap-3">
+        <div class="bg-white p-3 rounded-xl border flex justify-between items-center text-xs">
+          <span>Pares Restantes: <strong id="match-remaining" class="text-indigo-600">5</strong></span>
+          <button onclick="iniciarMatch()" class="text-indigo-600 underline">Novo Jogo</button>
+        </div>
+        <div class="bg-white rounded-2xl shadow-md border p-4">
+          <div class="grid grid-cols-2 gap-2.5">
+            <div id="match-col-drugs" class="flex flex-col gap-2"></div>
+            <div id="match-col-targets" class="flex flex-col gap-2"></div>
+          </div>
+          <div id="match-complete" class="hidden text-center py-4 mt-3 border-t">
+            <h3 class="text-base font-bold text-emerald-600">Parabéns! Deu Match em tudo! 🎯</h3>
+            <button onclick="iniciarMatch()" class="mt-2 bg-indigo-600 text-white px-4 py-1.5 rounded-lg text-xs font-semibold">Jogar Novamente</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEÇÃO 4: CLASSIFICADOR -->
+      <section id="section-classificador" class="w-full max-w-2xl hidden flex flex-col gap-3">
+        <div class="bg-white p-3 rounded-xl border flex justify-between items-center text-xs">
+          <span>Sequência: <strong id="classif-streak" class="text-emerald-600">0</strong></span>
+          <span>Restantes: <strong id="classif-count" class="text-indigo-600">0</strong></span>
+        </div>
+        <div class="bg-white rounded-2xl shadow-md border p-5 flex flex-col items-center">
+          <div id="classif-card" class="w-full max-w-sm bg-indigo-600 text-white p-5 rounded-2xl text-center mb-4 shadow">
+            <span class="text-[10px] uppercase bg-white/20 px-2 py-0.5 rounded font-bold">Fármaco em Avaliação</span>
+            <h2 id="classif-drug-name" class="text-2xl font-black mt-2">---</h2>
+            <p id="classif-drug-hint" class="text-xs text-indigo-100 mt-1 italic"></p>
+          </div>
+          <div id="classif-board" class="w-full">
+            <div id="classif-buttons" class="grid grid-cols-2 gap-2"></div>
+          </div>
+          <div id="classif-feedback" class="mt-3 text-xs font-bold h-4 text-center"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
 
   <script>
-    /* ======================================================== */
-    /* BANCO DE DADOS FARMACOLÓGICO                             */
-    /* ======================================================== */
-    const pharmaDb = [
-      { id: "fluoxetina", nome: "Fluoxetina", classe: "ISRS", destaque: "Início 20mg/dia (máx 80mg). Cápsula no SUS (não partir!)", perfil: "Meia-vida longa; ativador" },
-      { id: "sertralina", nome: "Sertralina", classe: "ISRS", destaque: "Início 50mg/dia (máx usual 200-300mg). Seguro pós-IAM", perfil: "Pouca interação no citocromo P450" },
-      { id: "paroxetina", nome: "Paroxetina", classe: "ISRS", destaque: "Início 20mg/dia (máx 40-50mg). Líder em disfunção sexual", perfil: "Potente sedativo e anticolinérgico" },
-      { id: "citalopram", nome: "Citalopram", classe: "ISRS", destaque: "Início 20mg/dia (máx 40mg, máx 20mg em idosos por QTc)", perfil: "Risco de arritmia em doses elevadas" },
-      { id: "escitalopram", nome: "Escitalopram", classe: "ISRS", destaque: "Início 10mg/dia (máx 30mg). ISRS mais seletivo", perfil: "Excelente tolerabilidade clínica inicial" },
-      { id: "fluvoxamina", nome: "Fluvoxamina", classe: "ISRS", destaque: "Início 50mg à noite (máx 300mg). Muito usado em TOC", perfil: "Forte inibidor de CYP1A2" },
-      { id: "venlafaxina", nome: "Venlafaxina", classe: "Dual (IRSN)", destaque: "Início 37,5mg/dia (máx 375mg). Pode elevar PA em altas doses", perfil: "Maior eficácia na depressão unipolar; ação dual dose-dependente" },
-      { id: "desvenlafaxina", nome: "Desvenlafaxina", classe: "Dual (IRSN)", destaque: "Início 50mg/dia (máx 400mg). Menos interação no citocromo", perfil: "Metabólito ativo da venlafaxina" },
-      { id: "duloxetina", nome: "Duloxetina", classe: "Dual (IRSN)", destaque: "Início 30mg/dia (máx 120mg). Excelente para dor neuropática", perfil: "Ação balanceada 5-HT/NE desde o início" },
-      { id: "amitriptilina", nome: "Amitriptilina", classe: "Tricíclico (ADT)", destaque: "Contraindicado se QTc > 500ms ou coronariopata. Sedativo", perfil: "Risco de arritmias ventriculares e morte súbita" },
-      { id: "nortriptilina", nome: "Nortriptilina", classe: "Tricíclico (ADT)", destaque: "Metabólito da amitriptilina; menor hipotensão ortostática", perfil: "Janela terapêutica estreita com curva em U" },
-      { id: "clomipramina", nome: "Clomipramina", classe: "Tricíclico (ADT)", destaque: "Mais potente serotoninérgico dos ADTs; padrão para TOC", perfil: "Maior risco convulsígeno e anticolinérgico" },
-      { id: "imipramina", nome: "Imipramina", classe: "Tricíclico (ADT)", destaque: "Histórico para enurese noturna e pânico. Requer ECG prévio", perfil: "Bloqueio alfa-1 e muscarínico marcado" },
-      { id: "bupropiona", nome: "Bupropiona", classe: "Atípico", destaque: "Inibe recaptação de NA/DA. Não causa disfunção sexual", perfil: "Contraindicado em epilepsia e bulimia" },
-      { id: "mirtazapina", nome: "Mirtazapina", classe: "Atípico", destaque: "Antagonista alfa-2; bloqueio H1 causa ganho de peso e sono", perfil: "Dose baixa (15mg) mais sedativa que alta (30-45mg)" },
-      { id: "agomelatina", nome: "Agomelatina", classe: "Atípico", destaque: "Agonista melatonérgico (MT1/MT2) e antagonista 5-HT2c", perfil: "Requer monitorização de enzimas hepáticas (TGO/TGP)" },
-      { id: "trazodona", nome: "Trazodona", classe: "Modulador Serotonina", destaque: "Muito usado em baixa dose (50mg) para insônia; risco de priapismo", perfil: "Antagonista 5-HT2a e inibidor de recaptação" },
-      { id: "vortioxetina", nome: "Vortioxetina", classe: "Modulador Serotonina", destaque: "Ação multimodal; melhora funções cognitivas e baixo dano sexual", perfil: "Agonista parcial/antagonista em múltiplos receptores" },
-      { id: "tranilcipromina", nome: "Tranilcipromina", classe: "IMAO", destaque: "Não seletivo. Risco de crise com tiramina e 1º lugar em Sd. Serotoninérgica", perfil: "Inibição irreversível da MAO-A e MAO-B" },
-      { id: "selegilina", nome: "Selegilina", classe: "IMAO", destaque: "Seletivo MAO-B em doses baixas; usado também em Parkinson", perfil: "Perde seletividade em doses elevadas" },
-      { id: "diazepam", nome: "Diazepam", classe: "Benzodiazepínico", destaque: "Início rápido, meia-vida longa (>24-48h). Menor abstinência aguda", perfil: "Receita azul (B1). Risco em dependentes/depressão" },
-      { id: "clonazepam", nome: "Clonazepam", classe: "Benzodiazepínico", destaque: "Início rápido e meia-vida longa (30-40h). Menor risco de abstinência abrupta", perfil: "Potente ansiolítico/anticonvulsivante" },
-      { id: "alprazolam", nome: "Alprazolam", classe: "Benzodiazepínico", destaque: "Meia-vida curta/intermediária (6-12h). ALTO risco de dependência e abstinência", perfil: "Efeito rebote de ansiedade comum entre doses" },
-      { id: "lorazepam", nome: "Lorazepam", classe: "Benzodiazepínico", destaque: "Meia-vida intermediária; metabolismo por glicuronidação direta", perfil: "Mais seguro em hepatopatas e idosos" }
+    /* BANCO DE DADOS - BLOCO 1 */
+    const db_Antidepressivos = [
+      { id: "fluoxetina", nome: "Fluoxetina", classe: "ISRS", destaque: "20mg pela manhã (máx 80mg). Cápsula no SUS", perfil: "Meia-vida longa; ativador" },
+      { id: "sertralina", nome: "Sertralina", classe: "ISRS", destaque: "50mg pela manhã (máx 200-300mg). Seguro pós-IAM", perfil: "Pouca interação no citocromo P450" },
+      { id: "paroxetina", nome: "Paroxetina", classe: "ISRS", destaque: "20mg pela manhã (máx 40-50mg). Líder disfunção sexual", perfil: "Sedativo e anticolinérgico" },
+      { id: "citalopram", nome: "Citalopram", classe: "ISRS", destaque: "20mg pela manhã (máx 20mg em idoso por QTc)", perfil: "Risco de alargar intervalo QTc" },
+      { id: "escitalopram", nome: "Escitalopram", classe: "ISRS", destaque: "10mg pela manhã (máx 30mg). Mais seletivo", perfil: "Excelente tolerabilidade clínica" },
+      { id: "fluvoxamina", nome: "Fluvoxamina", classe: "ISRS", destaque: "50mg à noite (máx 300mg). Muito usado em TOC", perfil: "Forte inibidor de CYP1A2" },
+      { id: "venlafaxina", nome: "Venlafaxina", classe: "Dual (IRSN)", destaque: "37,5mg pela manhã (máx 375mg). Eleva PA em dose alta", perfil: "Eficácia superior na depressão unipolar" },
+      { id: "desvenlafaxina", nome: "Desvenlafaxina", classe: "Dual (IRSN)", destaque: "50mg pela manhã (máx 400mg). Metabólito ativo", perfil: "Menos interação no citocromo" },
+      { id: "duloxetina", nome: "Duloxetina", classe: "Dual (IRSN)", destaque: "30mg pela manhã (máx 120mg). Excelente em dor crônica", perfil: "Ação equilibrada 5-HT/NE" },
+      { id: "amitriptilina", nome: "Amitriptilina", classe: "Tricíclico (ADT)", destaque: "25mg à noite. Contraindicado em QTc >500ms", perfil: "Sedativo, potente bloqueio muscarínico" },
+      { id: "clomipramina", nome: "Clomipramina", classe: "Tricíclico (ADT)", destaque: "25mg à noite (máx 250mg). Padrão-ouro em TOC", perfil: "Mais serotoninérgico dos ADTs" },
+      { id: "bupropiona", nome: "Bupropiona", classe: "Atípico", destaque: "150mg pela manhã. Não causa disfunção sexual", perfil: "Inibe NA/DA; contraindicado em epilepsia/bulimia" },
+      { id: "mirtazapina", nome: "Mirtazapina", classe: "Atípico", destaque: "15mg à noite. Estimula sono e apetite (bloqueio H1)", perfil: "Dose de 15mg é mais sedativa que 30-45mg" },
+      { id: "agomelatina", nome: "Agomelatina", classe: "Atípico", destaque: "25mg à noite. Agonista MT1/MT2; monitorar TGO/TGP", perfil: "Regula ritmo circadiano" },
+      { id: "trazodona", nome: "Trazodona", classe: "Modulador Serotonina", destaque: "50mg à noite. Uso como hipnótico; risco priapismo", perfil: "Antagonista 5-HT2a e inibidor de recaptação" },
+      { id: "vortioxetina", nome: "Vortioxetina", classe: "Modulador Serotonina", destaque: "10mg pela manhã. Melhora performance cognitiva", perfil: "Antidepressivo multimodal" },
+      { id: "tranilcipromina", nome: "Tranilcipromina", classe: "IMAO", destaque: "Crise hipertensiva com tiramina. 1º em Sd. Serotoninérgica", perfil: "Inibição irreversível da MAO" },
+      { id: "diazepam", nome: "Diazepam", classe: "Benzodiazepínico", destaque: "Meia-vida longa (>24-48h). Menor abstinência abrupta", perfil: "Receita azul B1" },
+      { id: "clonazepam", nome: "Clonazepam", classe: "Benzodiazepínico", destaque: "Início rápido e meia-vida longa (30-40h)", perfil: "Potente ansiolítico" },
+      { id: "alprazolam", nome: "Alprazolam", classe: "Benzodiazepínico", destaque: "Meia-vida curta/intermediária. Alto risco dependência", perfil: "Abstinência abrupta severa" }
     ];
 
-    /* ======================================================== */
-    /* MODO 4: CLASSIFICADOR RELÂMPAGO                          */
-    /* ======================================================== */
-    let classifDeck = [];
-    let currentClassifIndex = 0;
-    let currentStreak = 0;
-    let classifBloqueado = false;
-
-    const classesUnicas = [
-      "ISRS",
-      "Dual (IRSN)",
-      "Tricíclico (ADT)",
-      "Atípico",
-      "Modulador Serotonina",
-      "IMAO",
-      "Benzodiazepínico"
+    /* BANCO DE DADOS - BLOCO 2 */
+    const db_Antipsicoticos = [
+      { id: "haloperidol", nome: "Haloperidol", classe: "Típico (1ª Geração)", destaque: "Alta potência D2; alto risco de SEP e acatisia", perfil: "Padrão para agitação psicomotora e delírios" },
+      { id: "clorpromazina", nome: "Clorpromazina", classe: "Típico (1ª Geração)", destaque: "Baixa potência D2; muito sedativo e hipotensor", perfil: "Alta impregnação anticolinérgica" },
+      { id: "risperidona", nome: "Risperidona", classe: "Atípico (2ª Geração)", destaque: "Aumenta muito a prolactina (galactorreia/amenorreia)", perfil: "Antagonista D2 e 5-HT2A" },
+      { id: "olanzapina", nome: "Olanzapina", classe: "Atípico (2ª Geração)", destaque: "Maior risco de ganho de peso e síndrome metabólica", perfil: "Potente em agitação e mania aguda" },
+      { id: "quetiapina", nome: "Quetiapina", classe: "Atípico (2ª Geração)", destaque: "Sedativo em baixas doses (bloqueio H1); menor SEP", perfil: "Útil em depressão bipolar e insônia" },
+      { id: "aripiprazol", nome: "Aripiprazol", classe: "Atípico (3ª Geração)", destaque: "Agonista parcial D2; neutro no peso/prolactina", perfil: "Excelente perfil metabólico; vigiar acatisia" },
+      { id: "clozapina", nome: "Clozapina", classe: "Atípico (Resistência)", destaque: "Exige hemograma periódico pelo risco de agranulocitose", perfil: "Padrão-ouro para esquizofrenia refratária" },
+      { id: "litio", nome: "Carbonato de Lítio", classe: "Estabilizador do Humor", destaque: "Faixa 0,6-1,0 mEq/L; perigo com AINEs e desidratação", perfil: "Padrão-ouro em bipolaridade e prevenção suicídio" },
+      { id: "valproato", nome: "Ácido Valproico", classe: "Estabilizador / Antiepiléptico", destaque: "Teratogênico (tubo neural); monitorar plaquetas/fígado", perfil: "Excelente para mania aguda e estados mistos" },
+      { id: "lamotrigina", nome: "Lamotrigina", classe: "Estabilizador / Antiepiléptico", destaque: "Titulação lenta para evitar Stevens-Johnson", perfil: "Droga de escolha para fase depressiva bipolar" }
     ];
 
-    function iniciarClassificador() {
-      classifBloqueado = false;
-      document.getElementById('classif-end').classList.add('hidden');
-      document.getElementById('classif-card').classList.remove('hidden');
-      document.getElementById('classif-board').classList.remove('hidden');
+    let pharmaDb = db_Antidepressivos;
+    let classesUnicas = ["ISRS", "Dual (IRSN)", "Tricíclico (ADT)", "Atípico", "Modulador Serotonina", "IMAO", "Benzodiazepínico"];
 
-      classifDeck = [...pharmaDb].sort(() => 0.5 - Math.random());
-      currentClassifIndex = 0;
-      currentStreak = 0;
-      document.getElementById('classif-streak').textContent = currentStreak;
-
-      const container = document.getElementById('classif-buttons');
-      container.innerHTML = '';
-      
-      classesUnicas.forEach(cls => {
-        const btn = document.createElement('button');
-        btn.type = "button";
-        btn.className = "p-3 bg-white hover:bg-indigo-50 border border-slate-200 hover:border-indigo-400 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 transition shadow-sm";
-        btn.textContent = cls;
-        btn.onclick = () => submitClassification(cls);
-        container.appendChild(btn);
-      });
-
-      mostrarProximoClassif();
+    function toggleSidebar() {
+      const s = document.getElementById('sidebar');
+      const o = document.getElementById('sidebar-overlay');
+      s.classList.toggle('-translate-x-full');
+      o.classList.toggle('hidden');
     }
 
-    function mostrarProximoClassif() {
-      classifBloqueado = false;
-      if (currentClassifIndex >= classifDeck.length) {
-        document.getElementById('classif-card').classList.add('hidden');
-        document.getElementById('classif-board').classList.add('hidden');
-        const end = document.getElementById('classif-end');
-        end.classList.remove('hidden');
-        document.getElementById('classif-final-text').textContent = `Excelente! Você classificou as ${classifDeck.length} moléculas com sequência recorde de ${currentStreak}!`;
-        return;
-      }
+    function selecionarModulo(mod) {
+      const title = document.getElementById('current-module-title');
+      const b1 = document.getElementById('btn-mod-antidepressivos');
+      const b2 = document.getElementById('btn-mod-antipsicoticos');
 
-      document.getElementById('classif-count').textContent = classifDeck.length - currentClassifIndex;
-      const drug = classifDeck[currentClassifIndex];
-      document.getElementById('classif-drug-name').textContent = drug.nome;
-      document.getElementById('classif-drug-hint').textContent = drug.perfil;
-      document.getElementById('classif-feedback').textContent = "";
-    }
-
-    function submitClassification(chosenClass) {
-      if (classifBloqueado) return;
-      classifBloqueado = true;
-
-      const drug = classifDeck[currentClassifIndex];
-      const feedbackEl = document.getElementById('classif-feedback');
-
-      if (drug.classe === chosenClass) {
-        currentStreak++;
-        document.getElementById('classif-streak').textContent = currentStreak;
-        feedbackEl.className = "mt-4 text-xs font-bold text-emerald-600 text-center";
-        feedbackEl.textContent = `Correto! ${drug.nome} pertence a: ${drug.classe}.`;
+      if (mod === 'antidepressivos') {
+        pharmaDb = db_Antidepressivos;
+        classesUnicas = ["ISRS", "Dual (IRSN)", "Tricíclico (ADT)", "Atípico", "Modulador Serotonina", "IMAO", "Benzodiazepínico"];
+        title.textContent = "Antidepressivos & Ansiolíticos";
+        b1.className = "w-full text-left p-3 rounded-xl text-xs font-semibold bg-indigo-50 text-indigo-900 border border-indigo-200 shadow-sm flex items-center justify-between";
+        b2.className = "w-full text-left p-3 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 border border-transparent flex items-center justify-between";
       } else {
-        currentStreak = 0;
-        document.getElementById('classif-streak').textContent = currentStreak;
-        feedbackEl.className = "mt-4 text-xs font-bold text-rose-600 text-center";
-        feedbackEl.textContent = `Incorreto! ${drug.nome} pertence a: ${drug.classe}.`;
+        pharmaDb = db_Antipsicoticos;
+        classesUnicas = ["Típico (1ª Geração)", "Atípico (2ª Geração)", "Atípico (3ª Geração)", "Atípico (Resistência)", "Estabilizador do Humor", "Estabilizador / Antiepiléptico"];
+        title.textContent = "Antipsicóticos & Estabilizadores";
+        b2.className = "w-full text-left p-3 rounded-xl text-xs font-semibold bg-indigo-50 text-indigo-900 border border-indigo-200 shadow-sm flex items-center justify-between";
+        b1.className = "w-full text-left p-3 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-50 border border-transparent flex items-center justify-between";
       }
-
-      currentClassifIndex++;
-      setTimeout(mostrarProximoClassif, 700);
+      toggleSidebar();
+      iniciarClassificador();
+      iniciarMatch();
     }
 
-    /* ======================================================== */
-    /* MODO 1: PRESCRIÇÃO REAL                                   */
-    /* ======================================================== */
+    /* PRESCRIÇÕES */
     const rxCasos = [
-      {
-        id: 1,
-        paciente: "Mariana, 23 anos (UBS - Atenção Primária)",
-        demanda: "ISRS da Relação Municipal (REMUME)",
-        historia: "Quadro de Episódio Depressivo Maior inicial com anedonia e fadiga. A paciente retirará a medicação na farmácia básica do posto. Prescreva o antidepressivo padrão disponível na rede pública primária.",
-        gabarito: {
-          drogaEsperada: ["fluoxetina"],
-          viaEsperada: "oral",
-          doseNumerica: [20],
-          formaEsperada: "capsula",
-          timingEsperado: "manha",
-          orientacoes: "Fluoxetina: no SUS é dispensada em CÁPSULAS de 20 mg (não pode partir). Dose inicial: 20 mg pela manhã (perfil ativador). Dose máxima: 80 mg."
-        }
-      },
-      {
-        id: 2,
-        paciente: "Seu Geraldo, 66 anos (Cardiologia)",
-        demanda: "ISRS em Cardiopata Pós-IAM",
-        historia: "Sofreu infarto com angioplastia há 3 meses. Apresenta tristeza profunda, choro fácil e isolamento. Prescreva o ISRS de primeira escolha comprovadamente seguro para coronariopatas.",
-        gabarito: {
-          drogaEsperada: ["sertralina"],
-          viaEsperada: "oral",
-          doseNumerica: [50, 25],
-          formaEsperada: "comprimido",
-          timingEsperado: "manha",
-          orientacoes: "Sertralina: droga de escolha no pós-IAM (estudo SADHART). Iniciar com 50 mg (ou 25 mg no idoso) pela manhã. Dose máxima usual: 200 a 300 mg."
-        }
-      },
-      {
-        id: 3,
-        paciente: "Carla, 31 anos (Ambulatório)",
-        demanda: "ISRS Sedativo / Ansiolítico Potente",
-        historia: "Quadro de crise de pânico e ansiedade paroxística intensa com insônia grave. Foi decidida a prescrição do ISRS com perfil mais sedativo e anticolinérgico.",
-        gabarito: {
-          drogaEsperada: ["paroxetina"],
-          viaEsperada: "oral",
-          doseNumerica: [20],
-          formaEsperada: "comprimido",
-          timingEsperado: "manha",
-          orientacoes: "Paroxetina: dose inicial de 20 mg pela manhã (máx 40-50 mg). Lembrar do alto risco de disfunção sexual e ganho de peso."
-        }
-      },
-      {
-        id: 4,
-        paciente: "Dona Irene, 61 anos (Geriatria)",
-        demanda: "ISRS & Risco de Prolongamento de QTc",
-        historia: "Depressão unipolar no idoso. Foi indicado o Citalopram. Atente para a dose limite de segurança estipulada para a faixa etária idosa devido ao intervalo QTc.",
-        gabarito: {
-          drogaEsperada: ["citalopram"],
-          viaEsperada: "oral",
-          doseNumerica: [20, 10],
-          formaEsperada: "comprimido",
-          timingEsperado: "manha",
-          orientacoes: "Citalopram: dose inicial de 20 mg pela manhã. Dose máxima limitada a 20 mg no idoso pelo risco de arritmias ventriculares/alargamento do QTc."
-        }
-      },
-      {
-        id: 5,
-        paciente: "Thiago, 28 anos (Ambulatório de Saúde Mental)",
-        demanda: "ISRS de Alta Seletividade",
-        historia: "Paciente com medo de efeitos colaterais que solicita a medicação com menor taxa de interação medicamentosa e maior seletividade para o transportador de serotonina.",
-        gabarito: {
-          drogaEsperada: ["escitalopram"],
-          viaEsperada: "oral",
-          doseNumerica: [10],
-          formaEsperada: "comprimido",
-          timingEsperado: "manha",
-          orientacoes: "Escitalopram: enantiômero S puro do citalopram. Dose inicial: 10 mg pela manhã. Dose máxima: 20 a 30 mg."
-        }
-      },
-      {
-        id: 6,
-        paciente: "Bárbara, 26 anos (Ambulatório de TOC)",
-        demanda: "ISRS Sedativo para TOC",
-        historia: "Pensamentos intrusivos recorrentes e compulsão de higienização. Prescreva o ISRS classicamente reservado para TOC cuja administração é preconizada no período noturno devido à sonolência.",
-        gabarito: {
-          drogaEsperada: ["fluvoxamina"],
-          viaEsperada: "oral",
-          doseNumerica: [50],
-          formaEsperada: "comprimido",
-          timingEsperado: "noite",
-          orientacoes: "Fluvoxamina: dose inicial de 50 mg À NOITE ao deitar (dose máxima até 300 mg). Potente inibidor do CYP1A2."
-        }
-      },
-      {
-        id: 7,
-        paciente: "Renato, 44 anos (Clínica Médica)",
-        demanda: "DUAL (IRSN) de Ampla Eficácia",
-        historia: "Depressão unipolar com fadiga e anedonia marcada. Foi optado pelo dual com mecanismo dose-dependente (serotoninérgico em doses baixas e noradrenérgico em doses altas). Prescreva a dose inicial.",
-        gabarito: {
-          drogaEsperada: ["venlafaxina"],
-          viaEsperada: "oral",
-          doseNumerica: [37.5, 75],
-          formaEsperada: "capsula",
-          timingEsperado: "manha",
-          orientacoes: "Venlafaxina: iniciar com 37,5 mg/dia pela manhã em cápsula de liberação controlada (máx 375 mg). Vigiar pressão arterial em doses elevadas."
-        }
-      },
-      {
-        id: 8,
-        paciente: "Marcos, 55 anos (Ambulatório de Neuropatias)",
-        demanda: "DUAL (IRSN) para Dor e Humor",
-        historia: "Paciente com queimação e dor neuropática periférica por diabetes, associada a humor deprimido há meses. Prescreva a molécula dual padrão para essa associação.",
-        gabarito: {
-          drogaEsperada: ["duloxetina"],
-          viaEsperada: "oral",
-          doseNumerica: [30, 60],
-          formaEsperada: "capsula",
-          timingEsperado: "manha",
-          orientacoes: "Duloxetina: dose inicial de 30 mg pela manhã (titular para 60 mg; máx 120 mg). Ação equilibrada 5-HT/NE estimula a via descendente inibitória da dor."
-        }
-      },
-      {
-        id: 9,
-        paciente: "Tatiana, 37 anos (Ambulatório Geral)",
-        demanda: "DUAL (IRSN) Metabólito Ativo",
-        historia: "Depressão unipolar necessitando de terapia dual, mas em uso de múltiplos fármacos. O preceptor orienta prescrever o metabólito ativo direto da venlafaxina por menor interação com CYP2D6.",
-        gabarito: {
-          drogaEsperada: ["desvenlafaxina"],
-          viaEsperada: "oral",
-          doseNumerica: [50],
-          formaEsperada: "comprimido",
-          timingEsperado: "manha",
-          orientacoes: "Desvenlafaxina: dose inicial de 50 mg pela manhã em comprimido de liberação prolongada (máx 400 mg). Não necessita de metabolização primária pelo CYP2D6."
-        }
-      },
-      {
-        id: 10,
-        paciente: "Dona Nair, 72 anos (Enfermaria / Geriatria)",
-        demanda: "ATÍPICO para Insônia e Inapetência",
-        historia: "Idosa perdeu 8 kg por recusa alimentar e acorda várias vezes durante a noite. Prescreva o antidepressivo antagonista alfa-2 cujo bloqueio H1 induz apetite e sono.",
-        gabarito: {
-          drogaEsperada: ["mirtazapina"],
-          viaEsperada: "oral",
-          doseNumerica: [15, 7.5],
-          formaEsperada: "comprimido",
-          timingEsperado: "noite",
-          orientacoes: "Mirtazapina: 15 mg À NOITE ao deitar. O bloqueio anti-histamínico H1 induz sono rápido e ganho de peso. Em doses mais baixas é paradoxalmente mais sedativa."
-        }
-      },
-      {
-        id: 11,
-        paciente: "Rodrigo, 32 anos (Ambulatório Geral)",
-        demanda: "ATÍPICO Preservador da Libido",
-        historia: "Depressão unipolar com queixa prévia de anorgasmia severa por ISRS. Ele exige uma medicação que não prejudique a função sexual. Descarte epilepsia e bulimia.",
-        gabarito: {
-          drogaEsperada: ["bupropiona"],
-          viaEsperada: "oral",
-          doseNumerica: [150],
-          formaEsperada: "comprimido",
-          timingEsperado: "manha",
-          orientacoes: "Bupropiona: dose inicial de 150 mg pela manhã (máx 300 a 450 mg). Inibe recaptação de noradrenalina e dopamina, sem ação na serotonina, poupando a resposta sexual."
-        }
-      },
-      {
-        id: 12,
-        paciente: "Leonardo, 41 anos (Psiquiatria)",
-        demanda: "ATÍPICO - Modulador Melatonérgico",
-        historia: "Depressão associada a inversão de ritmo sono-vigília. Prescreva o agonista dos receptores MT1 e MT2 de melatonina e antagonista 5-HT2c. Lembre de monitorar transaminases hepáticas.",
-        gabarito: {
-          drogaEsperada: ["agomelatina"],
-          viaEsperada: "oral",
-          doseNumerica: [25],
-          formaEsperada: "comprimido",
-          timingEsperado: "noite",
-          orientacoes: "Agomelatina: 25 mg À NOITE ao deitar (máx 50 mg). Ajusta ritmos circadianos e melhora humor. Exige controle de função hepática."
-        }
-      },
-      {
-        id: 13,
-        paciente: "Silvia, 58 anos (Clínica Médica)",
-        demanda: "MODULADOR SEROTONINÉRGICO Hipnótico",
-        historia: "Paciente com insônia resistente e humor depressivo leve. Prescreva a molécula antagonista 5-HT2a usada em baixa dose noturna por suas propriedades sedativas.",
-        gabarito: {
-          drogaEsperada: ["trazodona"],
-          viaEsperada: "oral",
-          doseNumerica: [50],
-          formaEsperada: "comprimido",
-          timingEsperado: "noite",
-          orientacoes: "Trazodona: 50 mg À NOITE ao deitar. Em doses baixas (50-100 mg) atua como hipnótico/sedativo. Como antidepressivo exige doses bem maiores (>150-300 mg)."
-        }
-      },
-      {
-        id: 14,
-        paciente: "Danilo, 49 anos (Ambulatório Geral)",
-        demanda: "MODULADOR MULTIMODAL",
-        historia: "Depressão unipolar com queixa expressiva de lentificação do pensamento, perda de foco no trabalho e queixas de memória recente. Prescreva o antidepressivo multimodal.",
-        gabarito: {
-          drogaEsperada: ["vortioxetina"],
-          viaEsperada: "oral",
-          doseNumerica: [10, 5],
-          formaEsperada: "comprimido",
-          timingEsperado: "manha",
-          orientacoes: "Vortioxetina: 10 mg pela manhã (máx 20 mg). Ação multimodal em múltiplos subtipos de receptores 5-HT confere benefícios adicionais nas funções cognitivas."
-        }
-      },
-      {
-        id: 15,
-        paciente: "Helena, 43 anos (Ambulatório de Cefaleia)",
-        demanda: "TRICÍCLICO (ADT) Sedativo",
-        historia: "Enxaqueca crônica e queixas depressivas associadas. ECG prévio demonstrou ritmo sinusal e QTc de 410 ms. Prescreva o antidepressivo tricíclico padrão para profilaxia.",
-        gabarito: {
-          drogaEsperada: ["amitriptilina"],
-          viaEsperada: "oral",
-          doseNumerica: [25, 12.5, 10],
-          formaEsperada: "comprimido",
-          timingEsperado: "noite",
-          orientacoes: "Amitriptilina: 25 mg À NOITE ao deitar (potente sedação e bloqueio muscarínico). Contraindicado se QTc > 500 ms ou coronariopatia ativa."
-        }
-      },
-      {
-        id: 16,
-        paciente: "Rogério, 30 anos (Ambulatório de Transtornos Obsessivos)",
-        demanda: "TRICÍCLICO (ADT) Padrão-Ouro em TOC",
-        historia: "Quadro de TOC severo com rituais incapacitantes que falhou a múltiplos ISRS em dose máxima. Prescreva o tricíclico com ação serotoninérgica mais intensa.",
-        gabarito: {
-          drogaEsperada: ["clomipramina"],
-          viaEsperada: "oral",
-          doseNumerica: [25],
-          formaEsperada: "comprimido",
-          timingEsperado: "noite",
-          orientacoes: "Clomipramina: iniciar com 25 mg À NOITE (titulação lenta até 150-250 mg). Mais serotoninérgico dos ADTs, clássico na refratariedade do TOC."
-        }
-      }
+      { id:1, paciente:"Mariana, 23 anos (UBS)", demanda:"ISRS Farmácia Básica", historia:"Depressão Maior leve a moderada. Paciente retirará no posto. Prescreva o ISRS da rede básica.", gabarito:{ droga:["fluoxetina"], dose:[20], forma:"capsula", timing:"manha", orientacoes:"Fluoxetina no SUS é CÁPSULA 20mg (não partir). Iniciar 20mg pela manhã." }},
+      { id:2, paciente:"Seu Geraldo, 66 anos (Cardio)", demanda:"ISRS Pós-IAM", historia:"Sofreu infarto há 3 meses. Humor deprimido e apatia. Prescreva o ISRS de escolha no coronariopata.", gabarito:{ droga:["sertralina"], dose:[50,25], forma:"comprimido", timing:"manha", orientacoes:"Sertralina é a droga mais segura no pós-IAM (SADHART). Iniciar com 50mg (ou 25mg em idoso)." }},
+      { id:3, paciente:"Carla, 31 anos (Ambulatório)", demanda:"ISRS Sedativo / Ansiolítico", historia:"Crises de pânico intensas com insônia. Prescreva o ISRS com perfil mais sedativo e anticolinérgico.", gabarito:{ droga:["paroxetina"], dose:[20], forma:"comprimido", timing:"manha", orientacoes:"Paroxetina: iniciar 20mg pela manhã. Maior risco de ganho ponderal e dano sexual." }},
+      { id:4, paciente:"Dona Irene, 61 anos (Geriatria)", demanda:"ISRS & Atenção ao QTc", historia:"Depressão unipolar no idoso. Foi indicado o Citalopram. Atente para a dose limite de segurança para idosos.", gabarito:{ droga:["citalopram"], dose:[20,10], forma:"comprimido", timing:"manha", orientacoes:"Citalopram em idoso tem dose máxima de 20mg pelo risco de alargar QTc." }},
+      { id:5, paciente:"Thiago, 28 anos (Ambulatório)", demanda:"ISRS Mais Seletivo", historia:"Medo de colaterais. Solicita o antidepressivo com menor taxa de interação e alta seletividade.", gabarito:{ droga:["escitalopram"], dose:[10], forma:"comprimido", timing:"manha", orientacoes:"Escitalopram: enantiômero S puro. Iniciar com 10mg pela manhã (máx 20-30mg)." }},
+      { id:6, paciente:"Bárbara, 26 anos (TOC)", demanda:"ISRS Noturno para TOC", historia:"Pensamentos obsessivos intrusivos e rituais. Prescreva o ISRS de tomada noturna clássico em TOC.", gabarito:{ droga:["fluvoxamina"], dose:[50], forma:"comprimido", timing:"noite", orientacoes:"Fluvoxamina: iniciar com 50mg À NOITE (pelo perfil sedativo). Dose máxima até 300mg." }},
+      { id:7, paciente:"Renato, 44 anos (Clínica)", demanda:"DUAL de Ampla Resposta", historia:"Depressão com anedonia marcada. Optado pelo dual de ação dose-dependente. Prescreva a dose inicial.", gabarito:{ droga:["venlafaxina"], dose:[37.5,75], forma:"capsula", timing:"manha", orientacoes:"Venlafaxina: iniciar 37,5mg pela manhã em cápsula de liberação controlada." }},
+      { id:8, paciente:"Marcos, 55 anos (Dor)", demanda:"DUAL para Dor Neuropática", historia:"Diabetes com dor neuropática em MMII e depressão. Prescreva a droga dual indicada.", gabarito:{ droga:["duloxetina"], dose:[30,60], forma:"capsula", timing:"manha", orientacoes:"Duloxetina: iniciar com 30mg pela manhã (titular para 60mg; máx 120mg)." }},
+      { id:9, paciente:"Tatiana, 37 anos (Clínica)", demanda:"DUAL Metabólito Ativo", historia:"Depressão unipolar usando vários fármacos. Prescreva o metabólito direto com menor CYP2D6.", gabarito:{ droga:["desvenlafaxina"], dose:[50], forma:"comprimido", timing:"manha", orientacoes:"Desvenlafaxina: 50mg pela manhã em comprimido de liberação prolongada." }},
+      { id:10, paciente:"Dona Nair, 72 anos (Geriatria)", demanda:"ATÍPICO Sedativo / Apetite", historia:"Perdeu 8 kg por inapetência e não dorme à noite. Prescreva o NaSSA que causa sono e apetite.", gabarito:{ droga:["mirtazapina"], dose:[15,7.5], forma:"comprimido", timing:"noite", orientacoes:"Mirtazapina: 15mg À NOITE ao deitar (bloqueio H1 induz sono e apetite)." }},
+      { id:11, paciente:"Rodrigo, 32 anos (Ambulatório)", demanda:"ATÍPICO Poupador de Libido", historia:"Depressão com anorgasmia severa prévia por ISRS. Exige droga que não afete a função sexual.", gabarito:{ droga:["bupropiona"], dose:[150], forma:"comprimido", timing:"manha", orientacoes:"Bupropiona: iniciar com 150mg pela manhã. Ação dopamina/noradrenalina preserva a libido." }},
+      { id:12, paciente:"Leonardo, 41 anos (Psiquiatria)", demanda:"ATÍPICO Melatonérgico", historia:"Depressão associada a inversão de ritmo sono-vigília. Prescreva o agonista MT1/MT2.", gabarito:{ droga:["agomelatina"], dose:[25], forma:"comprimido", timing:"noite", orientacoes:"Agomelatina: 25mg À NOITE. Monitorar função hepática periodicamente." }},
+      { id:13, paciente:"Silvia, 58 anos (Clínica)", demanda:"MODULADOR Hipnótico", historia:"Insônia resistente associada a tristeza leve. Prescreva a molécula usada em 50mg ao deitar.", gabarito:{ droga:["trazodona"], dose:[50], forma:"comprimido", timing:"noite", orientacoes:"Trazodona: 50mg À NOITE. Dose hipnótica que evita dependência." }},
+      { id:14, paciente:"Danilo, 49 anos (Ambulatório)", demanda:"MODULADOR Cognição", historia:"Depressão com lentificação do pensamento e queixas de memória. Prescreva o fármaco multimodal.", gabarito:{ droga:["vortioxetina"], dose:[10,5], forma:"comprimido", timing:"manha", orientacoes:"Vortioxetina: 10mg pela manhã. Ação multimodal auxilia queixas cognitivas." }},
+      { id:15, paciente:"Helena, 43 anos (Cefaleia)", demanda:"TRICÍCLICO Profilaxia Enxaqueca", historia:"Enxaqueca crônica e depressão. ECG com QTc de 410ms normal. Prescreva o tricíclico padrão.", gabarito:{ droga:["amitriptilina"], dose:[25,10], forma:"comprimido", timing:"noite", orientacoes:"Amitriptilina: 25mg À NOITE ao deitar. Contraindicado em QTc >500ms." }},
+      { id:16, paciente:"Rogério, 30 anos (TOC Grave)", demanda:"TRICÍCLICO TOC Refratário", historia:"TOC incapacitante refratário a múltiplos ISRS. Prescreva o tricíclico mais potente para TOC.", gabarito:{ droga:["clomipramina"], dose:[25], forma:"comprimido", timing:"noite", orientacoes:"Clomipramina: 25mg À NOITE (titulando até 150-250mg). Padrão-ouro em TOC refratário." }}
     ];
 
-    let rxIndex = 0;
-    let rxApproved = 0;
+    let rxIndex = 0, rxApproved = 0;
 
     function carregarPrescricao() {
-      const caso = rxCasos[rxIndex];
+      const c = rxCasos[rxIndex];
       document.getElementById('rx-progress').textContent = `${rxIndex + 1}/${rxCasos.length}`;
       document.getElementById('rx-score').textContent = rxApproved;
-      document.getElementById('rx-paciente-nome').textContent = caso.paciente;
-      document.getElementById('rx-target-type').textContent = caso.demanda;
-      document.getElementById('rx-paciente-historia').textContent = caso.historia;
-      
-      const d = new Date();
-      document.getElementById('rx-data-hoje').textContent = d.toLocaleDateString('pt-BR');
-
+      document.getElementById('rx-paciente-nome').textContent = c.paciente;
+      document.getElementById('rx-target-type').textContent = c.demanda;
+      document.getElementById('rx-paciente-historia').textContent = c.historia;
+      document.getElementById('rx-data-hoje').textContent = new Date().toLocaleDateString('pt-BR');
       document.getElementById('rx-form').reset();
       document.getElementById('rx-feedback-box').classList.add('hidden');
       document.getElementById('rx-submit-btn').classList.remove('hidden');
     }
 
-    function parseDoseInput(raw) {
-      if (!raw) return NaN;
-      const limpo = raw.toLowerCase().replace(/mg/g, '').replace(/,/g, '.').trim();
-      return parseFloat(limpo);
-    }
-
     function emitirReceita() {
-      const caso = rxCasos[rxIndex];
-      const g = caso.gabarito;
-
-      const via = document.getElementById('rx-input-via').value;
+      const c = rxCasos[rxIndex].gabarito;
       const droga = document.getElementById('rx-input-droga').value.trim().toLowerCase();
-      const doseRaw = document.getElementById('rx-input-dose').value.trim();
-      const doseNum = parseDoseInput(doseRaw);
+      const doseNum = parseFloat(document.getElementById('rx-input-dose').value.replace(/mg/g,'').replace(',','.').trim());
+      const timing = document.getElementById('rx-input-timing').value;
       const forma = document.getElementById('rx-input-forma').value;
-      const timingEscolhido = document.getElementById('rx-input-timing').value;
 
-      let checks = [];
-      let aprovado = true;
+      let checks = [], ok = true;
 
-      // 1. Fármaco
-      const drogaCerta = g.drogaEsperada.some(d => droga.includes(d));
-      if (drogaCerta) {
-        checks.push(`<span class="text-emerald-600 font-semibold">✓ Fármaco Correto:</span> ${droga.toUpperCase()}`);
+      if (c.droga.some(d => droga.includes(d))) {
+        checks.push(`<span class="text-emerald-600 font-bold">✓ Fármaco Correto:</span> ${droga.toUpperCase()}`);
       } else {
-        checks.push(`<span class="text-rose-600 font-semibold">✗ Fármaco Inadequado:</span> Esperava-se ${g.drogaEsperada.join(' ou ').toUpperCase()}`);
-        aprovado = false;
+        checks.push(`<span class="text-rose-600 font-bold">✗ Fármaco Inadequado:</span> Esperava-se ${c.droga.join(' ou ').toUpperCase()}`);
+        ok = false;
       }
 
-      // 2. Dose Inicial Estrita
-      const doseCerta = !isNaN(doseNum) && g.doseNumerica.some(val => Math.abs(val - doseNum) < 0.01);
-      if (doseCerta) {
-        checks.push(`<span class="text-emerald-600 font-semibold">✓ Dose Inicial Adequada:</span> ${doseRaw} mg`);
+      if (!isNaN(doseNum) && c.dose.some(d => Math.abs(d - doseNum) < 0.01)) {
+        checks.push(`<span class="text-emerald-600 font-bold">✓ Dose Inicial Adequada:</span> ${doseNum} mg`);
       } else {
-        checks.push(`<span class="text-rose-600 font-semibold">✗ Dose Inicial Incorreta:</span> Digitado ${doseRaw} (esperava-se ${g.doseNumerica.join(' ou ')} mg)`);
-        aprovado = false;
+        checks.push(`<span class="text-rose-600 font-bold">✗ Dose Inicial Incorreta:</span> Esperava-se ${c.dose.join(' ou ')} mg`);
+        ok = false;
       }
 
-      // 3. Horário
-      if (timingEscolhido === g.timingEsperado) {
-        checks.push(`<span class="text-emerald-600 font-semibold">✓ Horário de Tomada Correto:</span> Adequado ao perfil farmacológico.`);
+      if (timing === c.timing) {
+        checks.push(`<span class="text-emerald-600 font-bold">✓ Horário Correto</span>`);
       } else {
-        checks.push(`<span class="text-rose-600 font-semibold">✗ Horário Inadequado:</span> Requer outro período.`);
-        aprovado = false;
+        checks.push(`<span class="text-rose-600 font-bold">✗ Horário Inadequado</span>`);
+        ok = false;
       }
 
-      // 4. Apresentação
-      if (forma === g.formaEsperada || (g.formaEsperada !== 'capsula' && forma === 'comprimido')) {
-        checks.push(`<span class="text-emerald-600 font-semibold">✓ Apresentação Adequada:</span> ${forma}`);
-      } else {
-        checks.push(`<span class="text-amber-600 font-semibold">! Apresentação:</span> Observe a forma padrão.`);
-      }
-
-      const fbBox = document.getElementById('rx-feedback-box');
       const stamp = document.getElementById('rx-stamp');
-      const checklistEl = document.getElementById('rx-checklist');
-      const gabaritoEl = document.getElementById('rx-gabarito');
-
-      checklistEl.innerHTML = checks.map(c => `<div>${c}</div>`).join('');
-      gabaritoEl.innerHTML = `<strong>Justificativa Farmacológica:</strong> ${g.orientacoes}`;
-
-      if (aprovado) {
+      if (ok) {
         rxApproved++;
         document.getElementById('rx-score').textContent = rxApproved;
-        stamp.className = "stamp-approved px-3 py-1 text-xs rounded";
+        stamp.className = "stamp-approved px-2 py-0.5 rounded";
         stamp.textContent = "PRESCRIÇÃO APROVADA";
       } else {
-        stamp.className = "stamp-rejected px-3 py-1 text-xs rounded";
+        stamp.className = "stamp-rejected px-2 py-0.5 rounded";
         stamp.textContent = "REVISÃO NECESSÁRIA";
       }
 
+      document.getElementById('rx-checklist').innerHTML = checks.map(x => `<div>${x}</div>`).join('');
+      document.getElementById('rx-gabarito').innerHTML = `<strong>Justificativa:</strong> ${c.orientacoes}`;
       document.getElementById('rx-submit-btn').classList.add('hidden');
-      fbBox.classList.remove('hidden');
+      document.getElementById('rx-feedback-box').classList.remove('hidden');
     }
 
     function proximaPrescricao() {
-      rxIndex++;
-      if (rxIndex < rxCasos.length) {
-        carregarPrescricao();
-      } else {
-        alert(`Atendimento concluído! Você finalizou todos os 16 casos com ${rxApproved} aprovações!`);
-        rxIndex = 0;
-        rxApproved = 0;
-        carregarPrescricao();
-      }
+      rxIndex = (rxIndex + 1) % rxCasos.length;
+      carregarPrescricao();
     }
 
-    /* ======================================================== */
-    /* MODO 2: CASOS CLÍNICOS                                    */
-    /* ======================================================== */
+    /* CASOS CLÍNICOS */
     const casosClinicos = [
-      {
-        titulo: "Lucas, 27 anos - A anamnese que não pode faltar",
-        enunciado: "Paciente chega à UBS com humor deprimido, apatia e perda de energia há 2 meses. Você decide indicar um ISRS (Escitalopram). Antes de carimbar a receita, qual pergunta é OBRIGATÓRIA na anamnese para evitar uma complicação iatrogênica grave?",
-        opcoes: [
-          {
-            texto: "Investigar ativamente episódios prévios de euforia, mania ou hipomania",
-            correto: true,
-            feedback: "Perfeito! Antidepressivos em monoterapia sem estabilizador de humor podem deflagrar virada maníaca em pacientes com Transtorno Bipolar não diagnosticado.",
-            perola: "💡 <strong>Pérola de Ouro:</strong> Perguntar sobre fases de menor necessidade de sono, hipersexualidade, aceleração do pensamento e gastos impulsivos."
-          },
-          {
-            texto: "Investigar apenas histórico familiar de neoplasia gastrointestinal",
-            correto: false,
-            feedback: "Inadequado. Não tem relação direta com os riscos imediatos da introdução de um antidepressivo.",
-            perola: ""
-          }
-        ]
-      },
-      {
-        titulo: "Eduardo, 31 anos - Emergência com rigidez e febre",
-        enunciado: "Paciente em uso de Venlafaxina tomou tramadol por conta própria para dor lombar. Dá entrada na UPA 8 horas depois confuso, sudorético, taquicárdico, febril (38,8°C), clônus ocular e hiperreflexia marcante.",
-        opcoes: [
-          {
-            texto: "Síndrome Serotoninérgica (Tratamento: suspender drogas, suporte, Benzodiazepínico e Ciproeptadina)",
-            correto: true,
-            feedback: "Critérios de Hunter preenchidos! Início agudo (<24h) com clônus, hiperreflexia e hipertermia por múltiplos agentes serotoninérgicos.",
-            perola: "💡 <strong>Diferencial:</strong> A Síndrome Serotoninérgica abre em até 24h com clônus. A Síndrome Neuroléptica Maligna (SNM) demora até 3 dias com rigidez plástica 'em cano de chumbo'."
-          },
-          {
-            texto: "Síndrome Neuroléptica Maligna (Tratamento: Haloperidol IM e contenção)",
-            correto: false,
-            feedback: "ERRO GRAVE! Haloperidol agravaria a SNM e não trata Síndrome Serotoninérgica.",
-            perola: ""
-          }
-        ]
-      },
-      {
-        titulo: "Rodrigo, 35 anos - Manejo da queixa de libido",
-        enunciado: "Paciente em uso de Sertralina 100 mg/dia há 6 meses para Depressão Maior. Em remissão estável há 3 meses. Queixa-se de perda expressiva da libido e anorgasmia.",
-        opcoes: [
-          {
-            texto: "Como está em remissão há >1 mês e dose acima da mínima, pode-se tentar reduzir para 50 mg/dia, trocar por Bupropiona ou associar Bupropiona",
-            correto: true,
-            feedback: "Excelente! Para reduzir a dose, exige-se remissão estável por pelo menos 1 mês e dose acima da mínima. Troca ou associação com Bupropiona é padrão-ouro.",
-            perola: "💡 <strong>Dica Prática:</strong> Inibidores da PDE-5 (como sildenafila) também são opção para homens e mulheres (se for distúrbio do orgasmo)."
-          },
-          {
-            texto: "Suspender a sertralina abruptamente sem desmame",
-            correto: false,
-            feedback: "Erro. Provoca síndrome de descontinuação (tontura, choques elétricos e ansiedade de rebote).",
-            perola: ""
-          }
-        ]
-      }
+      { titulo:"Lucas, 27 anos - Anamnese Obrigatória", enunciado:"Paciente com depressão maior na UBS. Você decide prescrever Escitalopram. O que deve ser perguntado antes de iniciar?", opcoes:[{texto:"Investigar episódios prévios de euforia ou hipomania (evitar virada maníaca)", correto:true, fb:"Correto! Monoterapia em bipolaridade induz virada maníaca."},{texto:"Investigar alergia a penicilina", correto:false, fb:"Sem relevância direta para introdução de ISRS."}]},
+      { titulo:"Eduardo, 31 anos - Emergência", enunciado:"Uso de Venlafaxina + tramadol. Chega febril (38,8°C), clônus ocular espontâneo e hiperreflexia patelar em menos de 12 horas.", opcoes:[{texto:"Síndrome Serotoninérgica (Critérios de Hunter: suspender drogas + BZD + Ciproeptadina)", correto:true, fb:"Correto! Início agudo com clônus define toxicidade serotoninérgica."},{texto:"Síndrome Neuroléptica Maligna", correto:false, fb:"SNM leva dias e cursa com rigidez em cano de chumbo."}]},
+      { titulo:"Rodrigo, 35 anos - Manejo Sexual", enunciado:"Depressão em remissão estável há 3 meses com Sertralina 100mg. Queixa-se de anorgasmia. O que fazer?", opcoes:[{texto:"Reduzir dose para 50mg (remissão >1 mês), trocar ou associar Bupropiona", correto:true, fb:"Perfeito! Bupropiona é a droga de escolha para recuperar a libido."},{texto:"Suspender abruptamente", correto:false, fb:"Causará síndrome de descontinuação severa."}]}
     ];
-
-    let casoAtual = 0;
-    let scoreCasos = 0;
-    let casoRespondido = false;
+    let cIdx = 0, cScore = 0, cAns = false;
 
     function renderizarCaso() {
-      casoRespondido = false;
-      const c = casosClinicos[casoAtual];
-      document.getElementById('caso-progress').textContent = `${casoAtual + 1}/${casosClinicos.length}`;
-      document.getElementById('caso-score').textContent = scoreCasos;
+      cAns = false;
+      const c = casosClinicos[cIdx];
+      document.getElementById('caso-progress').textContent = `${cIdx+1}/${casosClinicos.length}`;
+      document.getElementById('caso-score').textContent = cScore;
       document.getElementById('caso-titulo').textContent = c.titulo;
       document.getElementById('caso-enunciado').textContent = c.enunciado;
       document.getElementById('caso-feedback').classList.add('hidden');
-
-      const container = document.getElementById('caso-opcoes');
-      container.innerHTML = '';
-
+      const box = document.getElementById('caso-opcoes');
+      box.innerHTML = '';
       c.opcoes.forEach(opt => {
-        const btn = document.createElement('button');
-        btn.className = "w-full text-left p-3.5 rounded-xl border border-slate-200 bg-white hover:border-indigo-400 hover:bg-indigo-50/50 transition font-medium text-xs sm:text-sm text-slate-700 shadow-sm";
-        btn.textContent = opt.texto;
-        btn.onclick = () => responderCaso(opt, btn);
-        container.appendChild(btn);
+        const b = document.createElement('button');
+        b.className = "w-full text-left p-2.5 rounded-xl border bg-white text-xs font-medium hover:border-indigo-400";
+        b.textContent = opt.texto;
+        b.onclick = () => {
+          if (cAns) return;
+          cAns = true;
+          const fb = document.getElementById('caso-feedback');
+          const bd = document.getElementById('caso-badge');
+          if (opt.correto) {
+            cScore += 10;
+            document.getElementById('caso-score').textContent = cScore;
+            bd.className = "text-[10px] px-2 py-0.5 rounded font-bold bg-emerald-600 text-white";
+            bd.textContent = "CORRETO";
+            fb.className = "rounded-xl p-3 border border-emerald-200 bg-emerald-50 text-emerald-950";
+          } else {
+            bd.className = "text-[10px] px-2 py-0.5 rounded font-bold bg-rose-600 text-white";
+            bd.textContent = "INADEQUADO";
+            fb.className = "rounded-xl p-3 border border-rose-200 bg-rose-50 text-rose-950";
+          }
+          document.getElementById('caso-feedback-texto').textContent = opt.fb;
+          fb.classList.remove('hidden');
+        };
+        box.appendChild(b);
       });
-    }
-
-    function responderCaso(opt, btn) {
-      if (casoRespondido) return;
-      casoRespondido = true;
-
-      const feedback = document.getElementById('caso-feedback');
-      const badge = document.getElementById('caso-badge');
-      const texto = document.getElementById('caso-feedback-texto');
-      const perola = document.getElementById('caso-perola');
-
-      const buttons = document.querySelectorAll('#caso-opcoes button');
-      buttons.forEach(b => b.classList.add('opacity-50', 'cursor-not-allowed'));
-      btn.classList.remove('opacity-50');
-
-      if (opt.correto) {
-        scoreCasos += 10;
-        document.getElementById('caso-score').textContent = scoreCasos;
-        btn.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-900', 'font-semibold');
-        feedback.className = "rounded-xl p-4 border border-emerald-200 bg-emerald-50 text-emerald-950 mt-3";
-        badge.className = "text-xs px-2.5 py-0.5 rounded-full font-bold bg-emerald-600 text-white";
-        badge.textContent = "CONDUTA CORRETA";
-      } else {
-        btn.classList.add('border-rose-500', 'bg-rose-50', 'text-rose-900', 'font-semibold');
-        feedback.className = "rounded-xl p-4 border border-rose-200 bg-rose-50 text-rose-950 mt-3";
-        badge.className = "text-xs px-2.5 py-0.5 rounded-full font-bold bg-rose-600 text-white";
-        badge.textContent = "IATROGENIA / CONDUTA INADEQUADA";
-      }
-
-      texto.innerHTML = opt.feedback;
-      perola.innerHTML = opt.perola || "";
-      feedback.classList.remove('hidden');
     }
 
     function proximoCaso() {
-      casoAtual++;
-      if (casoAtual < casosClinicos.length) {
-        renderizarCaso();
-      } else {
-        document.getElementById('caso-enunciado').parentElement.classList.add('hidden');
-        document.getElementById('caso-opcoes').parentElement.classList.add('hidden');
-        document.getElementById('caso-feedback').classList.add('hidden');
-        const go = document.getElementById('casos-game-over');
-        go.classList.remove('hidden');
-        document.getElementById('casos-final-score').textContent = `Você totalizou ${scoreCasos} de ${casosClinicos.length * 10} pontos!`;
-      }
-    }
-
-    function reiniciarCasos() {
-      scoreCasos = 0;
-      casoAtual = 0;
-      document.getElementById('caso-enunciado').parentElement.classList.remove('hidden');
-      document.getElementById('caso-opcoes').parentElement.classList.remove('hidden');
-      document.getElementById('casos-game-over').classList.add('hidden');
+      cIdx = (cIdx + 1) % casosClinicos.length;
       renderizarCaso();
     }
 
-    /* ======================================================== */
-    /* MODO 3: MATCH DE COLUNAS                                  */
-    /* ======================================================== */
-    let matchDeck = [];
-    let selectedDrug = null;
-    let selectedTarget = null;
-    let matchesRemaining = 0;
-
+    /* MATCH */
+    let mDeck = [], sDrug = null, sTarget = null, mRem = 0;
     function iniciarMatch() {
       document.getElementById('match-complete').classList.add('hidden');
-      const shuffled = [...pharmaDb].sort(() => 0.5 - Math.random());
-      matchDeck = shuffled.slice(0, 5);
-      matchesRemaining = matchDeck.length;
-      document.getElementById('match-remaining').textContent = matchesRemaining;
-
-      const colDrugs = document.getElementById('match-col-drugs');
-      const colTargets = document.getElementById('match-col-targets');
-      colDrugs.innerHTML = '';
-      colTargets.innerHTML = '';
-
-      const drugsShuffled = [...matchDeck].sort(() => 0.5 - Math.random());
-      drugsShuffled.forEach(item => {
-        const btn = document.createElement('button');
-        btn.id = `drug-${item.id}`;
-        btn.className = "p-3 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm font-semibold text-slate-700 shadow-sm transition hover:border-indigo-400";
-        btn.textContent = item.nome;
-        btn.onclick = () => selectMatchItem('drug', item, btn);
-        colDrugs.appendChild(btn);
+      mDeck = [...pharmaDb].sort(() => 0.5 - Math.random()).slice(0, 5);
+      mRem = mDeck.length;
+      document.getElementById('match-remaining').textContent = mRem;
+      const cD = document.getElementById('match-col-drugs'), cT = document.getElementById('match-col-targets');
+      cD.innerHTML = ''; cT.innerHTML = '';
+      [...mDeck].sort(() => 0.5 - Math.random()).forEach(it => {
+        const b = document.createElement('button');
+        b.className = "p-2.5 rounded-xl border bg-white text-xs font-bold text-slate-700 shadow-sm";
+        b.textContent = it.nome;
+        b.onclick = () => {
+          document.querySelectorAll('#match-col-drugs button').forEach(x => x.classList.remove('card-selected'));
+          b.classList.add('card-selected');
+          sDrug = { it, b };
+          checkMatch();
+        };
+        cD.appendChild(b);
       });
-
-      const targetsShuffled = [...matchDeck].sort(() => 0.5 - Math.random());
-      targetsShuffled.forEach(item => {
-        const btn = document.createElement('button');
-        btn.id = `target-${item.id}`;
-        btn.className = "p-3 rounded-xl border border-slate-200 bg-slate-50 text-xs sm:text-sm font-medium text-slate-700 shadow-sm transition hover:border-indigo-400 text-left";
-        btn.innerHTML = `<span class="font-bold text-indigo-700 block">${item.classe}</span><span class="text-[11px] text-slate-500">${item.destaque}</span>`;
-        btn.onclick = () => selectMatchItem('target', item, btn);
-        colTargets.appendChild(btn);
+      [...mDeck].sort(() => 0.5 - Math.random()).forEach(it => {
+        const b = document.createElement('button');
+        b.className = "p-2.5 rounded-xl border bg-slate-50 text-xs text-left shadow-sm";
+        b.innerHTML = `<span class="font-bold text-indigo-700 block">${it.classe}</span><span class="text-[10px] text-slate-500">${it.destaque}</span>`;
+        b.onclick = () => {
+          document.querySelectorAll('#match-col-targets button').forEach(x => x.classList.remove('card-selected'));
+          b.classList.add('card-selected');
+          sTarget = { it, b };
+          checkMatch();
+        };
+        cT.appendChild(b);
       });
-
-      selectedDrug = null;
-      selectedTarget = null;
+      sDrug = null; sTarget = null;
     }
 
-    function selectMatchItem(type, item, btn) {
-      if (btn.classList.contains('card-matched')) return;
-
-      if (type === 'drug') {
-        document.querySelectorAll('#match-col-drugs button').forEach(b => b.classList.remove('card-selected'));
-        btn.classList.add('card-selected');
-        selectedDrug = { item, btn };
+    function checkMatch() {
+      if (!sDrug || !sTarget) return;
+      if (sDrug.it.id === sTarget.it.id) {
+        sDrug.b.classList.add('card-matched');
+        sTarget.b.classList.add('card-matched');
+        mRem--;
+        document.getElementById('match-remaining').textContent = mRem;
+        sDrug = null; sTarget = null;
+        if (mRem === 0) document.getElementById('match-complete').classList.remove('hidden');
       } else {
-        document.querySelectorAll('#match-col-targets button').forEach(b => b.classList.remove('card-selected'));
-        btn.classList.add('card-selected');
-        selectedTarget = { item, btn };
+        const b1 = sDrug.b, b2 = sTarget.b;
+        b1.classList.add('bg-rose-100'); b2.classList.add('bg-rose-100');
+        setTimeout(() => {
+          b1.classList.remove('card-selected', 'bg-rose-100');
+          b2.classList.remove('card-selected', 'bg-rose-100');
+          sDrug = null; sTarget = null;
+        }, 400);
       }
+    }
 
-      if (selectedDrug && selectedTarget) {
-        if (selectedDrug.item.id === selectedTarget.item.id) {
-          selectedDrug.btn.classList.remove('card-selected');
-          selectedTarget.btn.classList.remove('card-selected');
-          selectedDrug.btn.classList.add('card-matched');
-          selectedTarget.btn.classList.add('card-matched');
-
-          matchesRemaining--;
-          document.getElementById('match-remaining').textContent = matchesRemaining;
-          selectedDrug = null;
-          selectedTarget = null;
-
-          if (matchesRemaining === 0) {
-            document.getElementById('match-complete').classList.remove('hidden');
+    /* CLASSIFICADOR */
+    let clDeck = [], clIdx = 0, clStreak = 0, clLock = false;
+    function iniciarClassificador() {
+      clLock = false;
+      clDeck = [...pharmaDb].sort(() => 0.5 - Math.random());
+      clIdx = 0; clStreak = 0;
+      document.getElementById('classif-streak').textContent = clStreak;
+      const box = document.getElementById('classif-buttons');
+      box.innerHTML = '';
+      classesUnicas.forEach(c => {
+        const b = document.createElement('button');
+        b.className = "p-2.5 bg-white border rounded-xl text-xs font-semibold text-slate-700 hover:bg-indigo-50 shadow-sm";
+        b.textContent = c;
+        b.onclick = () => {
+          if (clLock) return;
+          clLock = true;
+          const cur = clDeck[clIdx];
+          const fb = document.getElementById('classif-feedback');
+          if (cur.classe === c) {
+            clStreak++;
+            fb.className = "mt-3 text-xs font-bold text-emerald-600 text-center";
+            fb.textContent = `Correto! ${cur.nome} é ${cur.classe}.`;
+          } else {
+            clStreak = 0;
+            fb.className = "mt-3 text-xs font-bold text-rose-600 text-center";
+            fb.textContent = `Incorreto! ${cur.nome} é ${cur.classe}.`;
           }
-        } else {
-          const dBtn = selectedDrug.btn;
-          const tBtn = selectedTarget.btn;
-          dBtn.classList.add('bg-rose-100', 'border-rose-400');
-          tBtn.classList.add('bg-rose-100', 'border-rose-400');
-          setTimeout(() => {
-            dBtn.classList.remove('card-selected', 'bg-rose-100', 'border-rose-400');
-            tBtn.classList.remove('card-selected', 'bg-rose-100', 'border-rose-400');
-            selectedDrug = null;
-            selectedTarget = null;
-          }, 500);
-        }
-      }
-    }
-
-    /* ======================================================== */
-    /* NAVEGAÇÃO ENTRE ABAS                                     */
-    /* ======================================================== */
-    function switchMode(mode) {
-      const secPrescricao = document.getElementById('section-prescricao');
-      const secCasos = document.getElementById('section-casos');
-      const secMatch = document.getElementById('section-match');
-      const secClassif = document.getElementById('section-classificador');
-
-      const btnPrescricao = document.getElementById('nav-prescricao');
-      const btnCasos = document.getElementById('nav-casos');
-      const btnMatch = document.getElementById('nav-match');
-      const btnClassif = document.getElementById('nav-classificador');
-
-      [btnPrescricao, btnCasos, btnMatch, btnClassif].forEach(b => {
-        b.className = "py-2 px-2 text-xs font-semibold rounded-xl transition text-slate-600 hover:bg-slate-100";
+          document.getElementById('classif-streak').textContent = clStreak;
+          clIdx++;
+          setTimeout(showClassif, 600);
+        };
+        box.appendChild(b);
       });
-
-      secPrescricao.classList.add('hidden');
-      secCasos.classList.add('hidden');
-      secMatch.classList.add('hidden');
-      secClassif.classList.add('hidden');
-
-      if (mode === 'prescricao') {
-        secPrescricao.classList.remove('hidden');
-        btnPrescricao.className = "py-2 px-2 text-xs font-semibold rounded-xl transition bg-indigo-600 text-white shadow-sm";
-        carregarPrescricao();
-      } else if (mode === 'casos') {
-        secCasos.classList.remove('hidden');
-        btnCasos.className = "py-2 px-2 text-xs font-semibold rounded-xl transition bg-indigo-600 text-white shadow-sm";
-        renderizarCaso();
-      } else if (mode === 'match') {
-        secMatch.classList.remove('hidden');
-        btnMatch.className = "py-2 px-2 text-xs font-semibold rounded-xl transition bg-indigo-600 text-white shadow-sm";
-        iniciarMatch();
-      } else if (mode === 'classificador') {
-        secClassif.classList.remove('hidden');
-        btnClassif.className = "py-2 px-2 text-xs font-semibold rounded-xl transition bg-indigo-600 text-white shadow-sm";
-        iniciarClassificador();
-      }
+      showClassif();
     }
 
-    // Inicialização direta no Classificador para teste
-    switchMode('classificador');
+    function showClassif() {
+      clLock = false;
+      if (clIdx >= clDeck.length) {
+        document.getElementById('classif-drug-name').textContent = "Concluído!";
+        document.getElementById('classif-drug-hint').textContent = `Sequência final: ${clStreak}`;
+        return;
+      }
+      document.getElementById('classif-count').textContent = clDeck.length - clIdx;
+      document.getElementById('classif-drug-name').textContent = clDeck[clIdx].nome;
+      document.getElementById('classif-drug-hint').textContent = clDeck[clIdx].perfil;
+      document.getElementById('classif-feedback').textContent = "";
+    }
+
+    /* NAVEGAÇÃO */
+    function switchMode(m) {
+      ['prescricao','casos','match','classificador'].forEach(id => {
+        document.getElementById(`section-${id}`).classList.add('hidden');
+        document.getElementById(`nav-${id}`).className = "py-2 px-2 text-xs font-semibold rounded-xl transition text-slate-600 hover:bg-slate-100";
+      });
+      document.getElementById(`section-${m}`).classList.remove('hidden');
+      document.getElementById(`nav-${m}`).className = "py-2 px-2 text-xs font-semibold rounded-xl transition bg-indigo-600 text-white shadow-sm";
+
+      if (m === 'prescricao') carregarPrescricao();
+      if (m === 'casos') renderizarCaso();
+      if (m === 'match') iniciarMatch();
+      if (m === 'classificador') iniciarClassificador();
+    }
+
+    carregarPrescricao();
+    renderizarCaso();
+    iniciarMatch();
   </script>
 </body>
 </html>
